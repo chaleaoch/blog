@@ -3,9 +3,9 @@
   "private": true,
   "type": "module",
   "author": {
-    "name": "mebtte",
-    "email": "hi@mebtte.com",
-    "url": "https://mebtte.com"
+    "name": "chaleaoch",
+    "email": "chaleaoch@gmail.com",
+    "url": "https://chaleaoch.com"
   },
   "scripts": {
     "watch": "node scripts/watch.js",
@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/mebtte/animal-photosynthesis.git"
+    "url": "git+https://github.com/chaleaoch/animal-photosynthesis.git"
   },
   "devDependencies": {
     "cheerio": "^1.0.0-rc.6",
