@@ -3,13 +3,13 @@ title: "一个不带插件的flask应用"
 publish_time: "2023-08-14"
 hidden: false
 ---
-# 起因
+## 起因
 
 事情的起因是这样的, 曾经维护过一个别人做的flask项目,引用了大量的插件, 在维护过程中需要调查插件的源码来解决问题, 发现有的插件功能很单一,但是却写的很复杂(因为开源插件要考虑各种实际使用场景). 有时间精力还不如自己写一个. 恰好得到一个从零开始的项目. 决定尝试做一个零插件的flask项目. 效果还不错.
 
 > 注意: 这里的零插件是指零flask插件,不是不用任何python插件.
 
-# 项目构成
+## 项目构成
 
 一个很简单的dashboard, 主要用到如下组件
 
@@ -32,7 +32,7 @@ Cython = "^0.29.30"
 
 可能用到的flask插件是: `flask-redis`, `flask-sqlalchemy`, `flask-peewee`,`flask-pydantic`
 
-## flask-redis
+### flask-redis
 
 先说flask-redis
 src/extentions.py
@@ -59,7 +59,7 @@ def get_redis_data(key) -> list[Any] | dict[Any, Any] | None:
 
 是不是超级简单,完全满足项目需要. 也不需要记忆开源插件的配置.
 
-# flask apscheduler
+## flask apscheduler
 
 再譬如scheduler
 src/extentioons.py
