@@ -17,15 +17,15 @@ jobs:
           npm ci
           npm run build
 
-      - run: echo 'mebtte.com' > build/CNAME
+      - run: echo 'chaleaoch.com' > build/CNAME
 
       - env:
           TOKEN: ${{secrets.TOKEN}}
         run: |
           cd build
           git init
-          git config --local user.name mebtte
-          git config --local user.email hi@mebtte.com
+          git config --local user.name chaleaoch
+          git config --local user.email chaleaoch@gmail.com
           git remote add origin https://$TOKEN@github.com/$GITHUB_REPOSITORY.git
           git checkout -b gh-pages
           git add --all
