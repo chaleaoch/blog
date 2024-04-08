@@ -4,7 +4,7 @@ publish_time: "2023-08-15"
 hidden: false
 ---
 
-# 起因
+## 起因
 
 [前文](https://chaleaoch.com/%E4%B8%80%E4%B8%AA%E4%B8%8D%E5%B8%A6%E6%8F%92%E4%BB%B6%E7%9A%84flask%E5%BA%94%E7%94%A8>) 介绍了自己写的`flask-redis` 和 `flask-scheduler`扩展. 今天介绍基于`flask` 和 `peewee` 如何实现半自动migrate.
 
@@ -14,7 +14,7 @@ hidden: false
 4. 标题和[前文](https://chaleaoch.com/%E4%B8%80%E4%B8%AA%E4%B8%8D%E5%B8%A6%E6%8F%92%E4%BB%B6%E7%9A%84flask%E5%BA%94%E7%94%A8)有介绍, 本项目尝试零插件实现一个flask应用.
 基于以上4点原因, 决定自己写一个半自动的`migrate`插件. 让冲突出现在`git push`阶段. 人为在代码层面解决冲突.而不是在`make migrate`的时候手忙脚乱.
 
-# peewee的migrate api
+## peewee的migrate api
 
 提供了常见的`增删改字段`和`create table`功能
 
@@ -32,7 +32,7 @@ migrator.add_index('story', ('pub_date',), False)
 
 更多就不粘了. 参考 [文档](http://docs.peewee-orm.com/en/latest/peewee/playhouse.html#supported-operations) 即可.
 
-# 思路及实现
+## 思路及实现
 
 思路非常简单,利用反射和`peewee`的`migrate api`, 自己写一个迁移的`class`(就是下面代码中的`Migrate`) 手动执行sql命令就行了.
 这里需要注意的是`create_tables` 引入的`model` 不能是代码中的最新版本的`model`. 必须是在刚刚创建这个`model`是的一个快照, 实现起来也很简单, 做一份拷贝就可以了.
@@ -92,6 +92,6 @@ class Migrate:
         migrate(self.migrator.add_column("amodel", "field_name", CharField(max_length=255, null=True)))
 ```
 
-# 使用
+## 使用
 
 `flask migrate 20200101 20220101`
