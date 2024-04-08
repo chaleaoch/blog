@@ -3,14 +3,15 @@ title: "一个不带插件的flask应用2 -- 自定义migrate"
 publish_time: "2023-08-15"
 hidden: false
 ---
+
 # 起因
 
-[前文](https://chaleaoch.com/post/%E4%B8%80%E4%B8%AA%E4%B8%8D%E5%B8%A6%E6%8F%92%E4%BB%B6%E7%9A%84flask%E5%BA%94%E7%94%A8/ "一个不带插件的flask应用") 介绍了自己写的`flask-redis` 和 `flask-scheduler`扩展. 今天介绍基于`flask` 和 `peewee` 如何实现半自动migrate.
+[前文](https://chaleaoch.com/%E4%B8%80%E4%B8%AA%E4%B8%8D%E5%B8%A6%E6%8F%92%E4%BB%B6%E7%9A%84flask%E5%BA%94%E7%94%A8>) 介绍了自己写的`flask-redis` 和 `flask-scheduler`扩展. 今天介绍基于`flask` 和 `peewee` 如何实现半自动migrate.
 
 1. django 默认提供了migration功能.
 2. django的migration功能在多人开发的模式下会有冲突,经常需要--merge. 并且也不能保证完全避免问题.
 3. peewee提供了migration的基础api
-4. 标题和[前文](https://chaleaoch.com/post/%E4%B8%80%E4%B8%AA%E4%B8%8D%E5%B8%A6%E6%8F%92%E4%BB%B6%E7%9A%84flask%E5%BA%94%E7%94%A8/ "一个不带插件的flask应用")>)有介绍, 本项目尝试零插件实现一个flask应用.
+4. 标题和[前文](https://chaleaoch.com/%E4%B8%80%E4%B8%AA%E4%B8%8D%E5%B8%A6%E6%8F%92%E4%BB%B6%E7%9A%84flask%E5%BA%94%E7%94%A8)有介绍, 本项目尝试零插件实现一个flask应用.
 基于以上4点原因, 决定自己写一个半自动的`migrate`插件. 让冲突出现在`git push`阶段. 人为在代码层面解决冲突.而不是在`make migrate`的时候手忙脚乱.
 
 # peewee的migrate api
