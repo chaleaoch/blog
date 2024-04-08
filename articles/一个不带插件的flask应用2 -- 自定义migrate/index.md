@@ -89,7 +89,7 @@ class Migrate:
     def migrate_20220815(self):
         self.db.create_tables([AModel,BModel])
     def migrate_20220816(self):
-        migrate(self.migrator.add_column("amodel", "field_name", CharField(max_length=255, null=True)))
+        migrate(self.migrator.add_column("amodel", "field_name", CharField(max_length=255, null=True)))
 ```
 
 ## 使用
