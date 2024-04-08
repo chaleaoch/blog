@@ -1,5 +1,6 @@
 # 动物的光合作用
 
+- [一个不带插件的flask应用3 -- app依赖反转](https://chaleaoch.com/一个不带插件的flask应用3 -- app依赖反转) <sup><sub>2024-04-08</sub></sup>
 - [Go包的可见性](https://chaleaoch.com/go包的可见性) <sup><sub>2024-01-29</sub></sup>
 - [Go代码断行规则](https://chaleaoch.com/Go代码断行规则) <sup><sub>2024-01-15</sub></sup>
 - [Go切片注意事项](https://chaleaoch.com/go切片注意事项) <sup><sub>2024-01-12</sub></sup>
