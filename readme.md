@@ -3,6 +3,7 @@
 - [Go包的可见性](https://chaleaoch.com/go包的可见性) <sup><sub>2024-01-29</sub></sup>
 - [Go代码断行规则](https://chaleaoch.com/Go代码断行规则) <sup><sub>2024-01-15</sub></sup>
 - [Go切片注意事项](https://chaleaoch.com/go切片注意事项) <sup><sub>2024-01-12</sub></sup>
+- [一个不带插件的flask应用2 -- 自定义migrate](https://chaleaoch.com/一个不带插件的flask应用2 -- 自定义migrate) <sup><sub>2023-08-15</sub></sup>
 - [一个不带插件的flask应用](https://chaleaoch.com/一个不带插件的flask应用) <sup><sub>2023-08-14</sub></sup>
 - [python对属性的搜索优先级](https://chaleaoch.com/python对属性的搜索优先级) <sup><sub>2023-07-28</sub></sup>
 - [archlinux安装xrdp踩坑记](https://chaleaoch.com/archlinux安装xrdp踩坑记) <sup><sub>2023-06-07</sub></sup>
