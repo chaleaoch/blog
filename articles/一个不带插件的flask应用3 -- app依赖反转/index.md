@@ -8,7 +8,7 @@ hidden: false
 
 基本思路就是加入第三方的Manager, 通过这个Manager来管理flask app和各个app, 避免将flask app直接暴露给子app, 造成泄漏flask app泄漏, 同时也实现了各个app和flask app的依赖反转, 各个app只需要关心自己的业务逻辑, 不需要关心flask app的实现细节.
 
-同时Manager还需要建立各个子app和flask app的关联关系. 实现的方式方法有很多， 譬如可以参考django 的写法在config.py中加入install_apps, 然后通过import_lib实现关联，本例使用的是自动遍历apps文件夹自动导入urls.py.
+同时Manager还需要建立各个子app和flask app的关联关系. 实现的方式方法有很多， 譬如可以参考django 的写法在config.py中加入`install_apps`, 然后通过`import_lib`实现关联，本例使用的是自动遍历apps文件夹自动导入urls.py.
 
 具体请参考代码：
 

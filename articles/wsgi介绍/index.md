@@ -1,18 +1,18 @@
 ---
 title: "wsgi介绍"
-publish_time: "2023-07-28"
+publish_time: "2024-04-29"
 hidden: false
 ---
 
-*犹豫最近在组内推广我写的基于flask的框架, 可能会被问到一些基于flask的相对底层的问题. 所以重新学习了一下flask/wsgi和asgi. 趁此机会整理一个小系列出来, 这是第一篇.*
+<p style="color: rgba(211, 211, 211, 0.9);">由于最近在组内推广我写的基于flask的框架, 可能会被问到一些基于flask的相对底层的问题. 所以重新学习了一下flask, wsgi和asgi. 趁此机会整理一个小系列出来, 这是第一篇.<p>
 
-wsgi是一个软件层面的接口(协议).
-解决server(gunicorn)和web application(flask)之间的通信问题.
+wsgi是一个软件层面的接口(协议).  
+解决server(gunicorn)和web application(flask)之间的通信问题.  
 wsgi分成三个部分, 服务端, 中间件和客户端. 其中中间件是可选的.
 
 ## 普通的web service
 
-在不考虑wsgi的情况下,
+在不考虑wsgi的情况下, 一个简单的web服务是这样的.  
 
 ```python
 import socket
@@ -81,7 +81,7 @@ environ, 字典, 保存http相关的信息
 }
 ```
 
-start_response 回调,两个参数, 第一个参数和状态码相关, 第二个参数和header相关
+start_response 回调,两个参数, 第一个参数和状态码相关, 第二个参数和header相关  
 `start_response('200 OK', [('Content-Type', 'text/html')])`
 
 返回值, 是一个可迭代对象, 里面是**字节串**, 内容是body.
@@ -90,8 +90,10 @@ start_response 回调,两个参数, 第一个参数和状态码相关, 第二个
 
 可以参考gunicorn的源码
 <https://github.com/benoitc/gunicorn/blob/master/gunicorn/workers/sync.py>
+
 commit id: 5b68c17b170c7b021a7a982a06c08e3898a5a640
-`respiter = self.wsgi(environ, resp.start_response)`
+
+其中`respiter = self.wsgi(environ, resp.start_response)` 调用了application
 
 ```python
 def handle_request(self, listener, req, client, addr):
@@ -116,12 +118,13 @@ def handle_request(self, listener, req, client, addr):
 
 ### 中间件
 
-中间件不是必须的, 在gunicorn和flask的组合中, 默认是没有中间件的.
-当初制定wsgi协议的时候, 作者一开始的想法是将app设计成类似插件的形式, 每个app都非常轻, 通过中间件的方式, 将多个app组合在一起.
-最后发展成现在这个样子.
-中间件的格式很简单, 实现客户端的同时调用(另一个)客户端.
+中间件不是必须的, 在gunicorn和flask的组合中, 默认是没有中间件的.  
+当初制定wsgi协议的时候, 作者一开始的想法是将app设计成类似插件的形式, 每个app都非常轻, 通过中间件的方式, 将多个app组合在一起.  
+最后发展成一个框架统一天下, 不需要中间件的样子.
+中间件的格式很简单, 实现客户端的同时调用(另一个)客户端.  
 
-举个例子, `def __call__(` 这部分是客户端, `return self.app(environ, start_response)` 这部分是**调用**客户端.
+举个例子, `def __call__(` 这部分是客户端.  
+`return self.app(environ, start_response)` 这部分是**调用**客户端.  
 
 ```python
 from your_application import app
