@@ -40,11 +40,11 @@ src/extentions.py
 ```python
 from redis import Redis
 class FlaskRedis:
-    def __init__(self) -> None:
-        self.client = None
+    def __init__(self) -> None:
+        self.client = None
 
-    def init(self, app):
-        self.client = Redis.from_url(app.config["REDIS_URL"])
+    def init(self, app):
+        self.client = Redis.from_url(app.config["REDIS_URL"])
 redis_client = FlaskRedis()
 ```
 
