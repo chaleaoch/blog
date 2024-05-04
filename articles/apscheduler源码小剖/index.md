@@ -1,10 +1,10 @@
 ---
-title: "apscheduler"
+title: "apscheduler小剖"
 publish_time: "2024-05-04"
 hidden: false
 ---
 
-<p style="color: rgba(211, 211, 211, 0.9);">前段时间同事问我, 如果直接修改apscheduler的数据库信息, 是否可以让job快速运行. 答案当然是否定的, 具体原因需要结合代码解释, 这就是本文的由来.<p>
+<p style="color: rgba(127, 127, 127, 0.9);">前段时间同事问我, 如果直接修改apscheduler的数据库信息, 是否可以让job快速运行. 答案当然是否定的, 具体原因需要结合代码解释, 这就是本文的由来.<p>
 
 无论是官网还是源码, 都很清晰的表达apscheduler由四个部分组成.
 
@@ -56,7 +56,8 @@ def get_due_jobs(self, now):
 简单解释一下上文中的`submit_job`
 `f = self._pool.submit(run_job, job, job._jobstore_alias, run_times, self._logger.name)`
 
-## 总结
+## 其他
 
 trigger我没看, 因为crontab太复杂, interval太简单, 不需要看哈哈...
 apscheduler看到这种程度,针对应用层的开发我觉得足够了.调用api的时候大概知道其中的原理, 做到心中有数还是很有必要的, 关键是这个库的源码很简单, 也很好理解, 看了也就看了, 不会花太多的时间.
+还有就是apscheduler中的monitor感兴趣的同行可以看看.
