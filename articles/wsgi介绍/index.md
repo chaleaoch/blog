@@ -4,7 +4,7 @@ publish_time: "2024-04-29"
 hidden: false
 ---
 
-<p style="color: rgba(211, 211, 211, 0.9);">由于最近在组内推广我写的基于flask的框架, 可能会被问到一些基于flask的相对底层的问题. 所以重新学习了一下flask, wsgi和asgi. 趁此机会整理一个小系列出来, 这是第一篇.<p>
+<p style="color: rgba(127, 127, 127, 0.9);">由于最近在组内推广我写的基于flask的框架, 可能会被问到一些基于flask的相对底层的问题. 所以重新学习了一下flask, wsgi和asgi. 趁此机会整理一个小系列出来, 这是第一篇.<p>
 
 wsgi是一个软件层面的接口(协议).  
 解决server(gunicorn)和web application(flask)之间的通信问题.  
