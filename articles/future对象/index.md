@@ -20,17 +20,19 @@ def task(n):
     return n * n
 
 
-def async_run(func, *args):
+def non_blocking_run(func, *args):
     executor = ThreadPoolExecutor(max_workers=3)
     future = executor.submit(func, *args)
     executor.shutdown(wait=False)
     return future
 
 
-f = async_run(task, 3)
+f = non_blocking_run(task, 3)
+f.add_done_callback(lambda future: print(future.result()))  # 异步回调 9
 time.sleep(3)  # do something business logic
 print(f"main:{datetime.now()}")
-print(f.result())
+print(f.result())  # 9
+
 ```
 
 ## Executor
@@ -53,7 +55,7 @@ print(f.result())
 返回一个元组, 已经完成的future对象和未完成的future对象
 timeout, 超时时间
 return_when, 一个枚举值, ALL_COMPLETED, FIRST_COMPLETED, FIRST_EXCEPTION
-![alt text](./image.png)
+![alt text](./index/attachments/image.png)
 
 ```python
 import concurrent.futures
