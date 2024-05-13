@@ -53,7 +53,7 @@ print(f.result())
 返回一个元组, 已经完成的future对象和未完成的future对象
 timeout, 超时时间
 return_when, 一个枚举值, ALL_COMPLETED, FIRST_COMPLETED, FIRST_EXCEPTION
-![alt text](index/image.png)
+![alt text](./image.png)
 
 ```python
 import concurrent.futures
