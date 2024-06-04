@@ -29,7 +29,20 @@ filter的组成部分:
 2. 将搜索字段转换为peewee field
 3. 将peewee field转换为filter field
 4. 校验搜索值是否合法
-5. 持续迭代搜索字段并 `query.where(<peewee field> <operator> <request field value>)`
+5. 将搜索符号转换为 operator
+
+```python
+   "==": pyoperator.eq,
+   "!=": pyoperator.ne,
+   ">=": pyoperator.ge,
+   "<=": pyoperator.le,
+   ">": pyoperator.gt,
+   "<": pyoperator.lt,
+   "LIKE": pyoperator.mod,
+   "ILIKE": pyoperator.pow,
+```
+
+6. 持续迭代搜索字段并 `query.where(<peewee field> <operator> <request field value>)`
 
 具体代码请参考: [https://github.com/chaleaoch/flask-filter](https://github.com/chaleaoch/flask-filter)
 
