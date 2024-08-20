@@ -1,6 +1,6 @@
 ---
-title: "一个不带插件的flask应用3 -- app依赖反转"
-publish_time: "2024-04-08"
+title: "cors扫盲"
+publish_time: "2024-08-20"
 hidden: false
 ---
 
