@@ -44,9 +44,9 @@ print(f.result())  # 9
 由`Executor.submit()` 返回
 
 主要方法:
-`result(timeout=None)` 阻塞直到结果返回, 或者超时, 如有异常, 正常触发.
-`exception(timeout=None)` 阻塞直到结果返回, 或者超时, 如有异常, 返回异常对象, 否则, 返回None
-`cancel()` 尝试取消任务, 如果任务已经开始, 则返回False, 否则返回True
+`result(timeout=None)` 阻塞直到结果返回, 或者超时, 如有异常, 正常触发.  
+`exception(timeout=None)` 阻塞直到结果返回, 或者超时, 如有异常, 返回异常对象, 否则, 返回None  
+`cancel()` 尝试取消任务, 如果任务已经开始, 则返回False, 否则返回True  
 
 ## 函数
 
