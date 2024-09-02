@@ -27,7 +27,8 @@ hidden: false
 选Custom storage layout
 ![alt text](./index/attachments/image-9.png)
 ![alt text](./index/attachments/image-10.png)
-这里说法很多, 我选择了最简单的那种. ![alt text](index/image-11.png)
+这里说法很多, 我选择了最简单的那种.
+![alt text](./index/attachments/image-3.png)
 ![alt text](./index/attachments/image-12.png)
 ![alt text](./index/attachments/image-13.png)
 ![alt text](./index/attachments/image-14.png)
