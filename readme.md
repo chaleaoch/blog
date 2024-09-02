@@ -1,5 +1,7 @@
 # 动物的光合作用
 
+- [Ubuntu Serviver24.04安装小记](https://chaleaoch.com/ubuntu serviver24.04安装小记) <sup><sub>2024-09-02</sub></sup>
+- [cors扫盲](https://chaleaoch.com/cors扫盲) <sup><sub>2024-08-20</sub></sup>
 - [一个不带插件的flask应用4 -- flask-filter](https://chaleaoch.com/一个不带插件的flask应用4 -- flask-filter) <sup><sub>2024-06-04</sub></sup>
 - [future对象](https://chaleaoch.com/future对象) <sup><sub>2024-05-13</sub></sup>
 - [apscheduler小剖](https://chaleaoch.com/apscheduler源码小剖) <sup><sub>2024-05-04</sub></sup>
