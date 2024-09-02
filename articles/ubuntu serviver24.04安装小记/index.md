@@ -10,7 +10,7 @@ hidden: false
 
 ![alt text](./index/attachments/image-1.png)
 这里我选的minimized方式安装
-![alt text](index/attachments/image-2.png)
+![alt text](./index/attachments/image-2.png)
 选Edit IPv4
 ![alt text](./index/attachments/image-24.png)
 ![alt text](./index/attachments/image-23.png)
