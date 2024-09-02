@@ -1,0 +1,681 @@
+<!DOCTYPE html><html lang="zh-cn"><head>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="chaleaoch">
+<meta name="keywords" content="HTML, CSS, JavaScript, Web, Front-End">
+
+<!-- Google Analytics -->
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-CESZTRKM96"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-CESZTRKM96');
+</script>
+
+<!-- open graph -->
+<meta property="og:type" content="website">
+<meta property="og:image" content="/6ed5faa0573b2a5a9d47232c9a71fb88.png">
+
+<link rel="shortcut icon" type="image/png" href="/6ed5faa0573b2a5a9d47232c9a71fb88.png">
+<link rel="sitemap" type="application/xml" href="/sitemap.xml">
+
+<link rel="preload" href="/1acfd736cd99e3dea4bc1ded904b2589.ttf" as="font" crossorigin="anonymous">
+<link rel="preload" href="/80ff3b2d122ff544e38b3f4633c7976a.ttf" as="font" crossorigin="anonymous">
+
+  <style>
+  @font-face {
+    font-family: common_font;
+    src: url(/80ff3b2d122ff544e38b3f4633c7976a.ttf);
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    --content-max-width: 840px;
+
+    --primary-color: rgb(237 106 94);
+
+    --normal-color: #333;
+    --secondary-color: #888;
+    --tertiary-color: #ddd;
+    --backgroud: rgb(255 255 255);
+
+    --border-radius: 2px;
+    --transition-duration: 0.3s;
+
+    background-color: var(--backgroud);
+    transition: background-color var(--transition-duration);
+  }
+
+  figure {
+    margin-inline: 0;
+  }
+</style>
+
+
+  <title>wsgi介绍 - 志超说</title>
+  <meta name="description" content="<p style=&quot;color: rgba(127, 127, 127, 0.9);&quot;>由于最近在组内推广我写的基于flask的框架, 可能会被问到一些基于flask的相对底层的问题. 所以重新学习了一下flask, wsgi和asgi. 趁此机会整理一个小系列出来, 这是第一篇.<p>  wsgi......">
+  <meta property="og:description" content="<p style=&quot;color: rgba(127, 127, 127, 0.9);&quot;>由于最近在组内推广我写的基于flask的框架, 可能会被问到一些基于flask的相对底层的问题. 所以重新学习了一下flask, wsgi和asgi. 趁此机会整理一个小系列出来, 这是第一篇.<p>  wsgi......">
+
+  <link rel="preload" href="/0027c81e482e0ac7d29469a32a0c9623.ttf" as="font" crossorigin="anonymous">
+  <style>
+    @font-face {
+      font-family: article_font_wsgi介绍;
+      src: url(/0027c81e482e0ac7d29469a32a0c9623.ttf);
+    }
+    article {
+      font-family: article_font_wsgi介绍;
+    }
+  </style>
+  
+  <link rel="stylesheet" href="/ece570de77ba673c17121d06fc929bd9.css">
+</head>
+
+<body>
+  <style>
+  @font-face {
+    font-family: title_font;
+    src: url(/1acfd736cd99e3dea4bc1ded904b2589.ttf);
+  }
+
+  .page-header {
+    max-inline-size: var(--content-max-width);
+    margin-block: 50px 40px;
+    margin-inline: auto;
+    padding-inline: 30px;
+    display: flex;
+    align-items: center;
+  }
+
+  .page-header_title {
+    flex: 1;
+    min-inline-size: 0;
+    font-size: min(8vw, 56px);
+    font-family: title_font;
+    margin: 0;
+    color: var(--normal-color);
+  }
+
+  .page-header_title > a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .page-header_icon {
+    margin-inline-start: 10px;
+  }
+
+  .page-header_icon > img {
+    user-select: none;
+    inline-size: 20px;
+    block-size: 20px;
+  }
+</style>
+
+<header class="page-header">
+  
+    <h2 class="page-header_title">
+      <a href="/">志超说</a>
+    </h2>
+  
+  <a class="page-header_icon" href="/rss.xml" target="_blank">
+    <img src="/e31ad23031e5bcb34e8d4a424ba0c100.png" alt="rss">
+  </a>
+  <a class="page-header_icon" href="https://github.com/chaleaoch/animal-photosynthesis" target="_blank">
+    <img src="/184c800e11079b13904f308161071b62.png" alt="github">
+  </a>
+  <!-- <a class="page-header_icon" href="//i.mebtte.com" target="_blank">
+    <img src="/author.png" alt="author" />
+  </a> -->
+</header>
+
+  <article>
+    <style>
+.article-header {
+  max-inline-size: var(--content-max-width);
+  margin-block: 40px;
+  margin-inline: auto;
+  padding-inline: 30px;
+}
+
+.article-title {
+  color: var(--primary-color);
+  font-size: 32px;
+  margin: 0;
+  padding: 0;
+  line-height: 1.5;
+}
+
+.article-title a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.article-publish-time {
+  color: var(--secondary-color);
+  font-size: 14px;
+  font-family: common_font;
+}
+</style>
+
+<section class="article-header">
+  <h1 class="article-title">
+    <a href="/wsgi介绍">wsgi介绍</a>
+  </h1>
+  <time class="article-publish-time">2024-04-29</time>
+</section>
+
+    <style>
+  article {
+    --article-space: 30px;
+  }
+
+  article a {
+    color: var(--normal-color);
+    text-decoration-color: var(--primary-color);
+  }
+
+  article h2, article h3, article h4, article h5, article h6 {
+    max-inline-size: var(--content-max-width);
+    padding-inline: 30px;
+    margin-inline: auto;
+    line-height: 1.5;
+    color: var(--normal-color);
+  }
+
+  article h2 {
+    margin-block-start: 28px;
+    font-size: 28px;
+  }
+
+  article h3 {
+    margin-block-start: 26px;
+    font-size: 25px;
+  }
+
+  article h4 {
+    margin-block-start: 24px;
+    font-size: 22px;
+  }
+
+  article h5 {
+    margin-block-start: 22px;
+    font-size: 19px;
+  }
+
+  article h6 {
+    margin-block-start: 20px;
+    font-size: 16px;
+  }
+
+  article p {
+    max-inline-size: var(--content-max-width);
+
+    margin-block: 15px;
+    margin-inline: auto;
+    padding-inline: 30px;
+
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--normal-color);
+    word-break: break-word;
+  }
+
+  article p code, article ul code, article ol code, article table code {
+    padding-inline: 4px;
+    border-radius: var(--border-radius);
+    background: rgba(237, 106, 94, 0.3);
+  }
+
+  article pre {
+    max-inline-size: var(--content-max-width) !important;
+    margin-block: 15px !important;
+    margin-inline: auto !important;
+    font-size: 14px !important;
+    box-sizing: border-box;
+    border-radius: var(--border-radius) !important;
+    tab-size: 2 !important;
+    padding: 0 !important;
+  }
+
+  article pre code {
+    display: block;
+    margin-block: 20px !important;
+    margin-inline: 30px !important;
+    overflow: auto !important;
+    font-size: inherit !important;
+  }
+
+  article hr {
+    max-inline-size: var(--content-max-width);
+    margin-block: 40px;
+    margin-inline: auto;
+    padding-inline: var(--article-space);
+    border: none;
+  }
+
+  article hr::after{
+    content: '';
+    display: block;
+    block-size: 1px;
+    background-color:var(--tertiary-color);
+  }
+
+  article blockquote {
+    max-inline-size: var(--content-max-width);
+    padding-inline: var(--article-space);
+    margin-block: 15px;
+    margin-inline: auto;
+    position: relative;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--secondary-color);
+  }
+
+  .table-container {
+    max-inline-size: var(--content-max-width);
+    padding-inline: 30px;
+    margin-block: 15px;
+    margin-inline: auto;
+  }
+
+  .table-container table {
+    border-collapse: collapse;
+  }
+
+  .table-container th, .table-container td {
+    font-size: 14px;
+    color: var(--normal-color);
+    border: 1px solid var(--tertiary-color);
+    padding: 10px;
+    text-align: left;
+  }
+
+  .table-container th {
+    font-size: 16px;
+    text-align: left;
+  }
+
+  article blockquote::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 30px;
+    inline-size: 3px;
+    block-size: 100%;
+    background-color: var(--primary-color);
+  }
+
+  article blockquote p {
+    font-size: 16px;
+    color: inherit;
+    max-inline-size: unset;
+    padding: 0;
+    margin-inline-start: 30px;
+  }
+
+  article ul,
+  article ol {
+    max-inline-size: var(--content-max-width);
+    padding-inline: 30px;
+    margin-block: 15px;
+    margin-inline: auto;
+    color: var(--normal-color);
+    line-height: 1.5;
+  }
+
+  article ol {
+    counter-reset: li-count;
+  }
+  
+  article ul li, article ol li {
+    display: block;
+    margin-block: 5px;
+    position: relative;
+  }
+
+  article ol li {
+    counter-increment: li-count;
+  }
+
+  article ul li::before {
+    content: '';
+    display: inline-block;
+    inline-size: 6px;
+    block-size: 6px;
+
+    margin-inline-end: 10px;
+
+    vertical-align: middle;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+  }
+
+  article ol li::before {
+    content: counter( li-count) '. ';
+    color: var(--primary-color);
+  }
+
+  article figcaption {
+    font-size: 12px;
+    color: var(--secondary-color);
+    text-align: center;
+    margin-block-start: 5px;
+  }
+
+  .figure-img {
+    max-inline-size: var(--content-max-width);
+    padding-inline: 30px;
+    margin-block: 15px;
+    margin-inline: auto;
+  }
+
+  .figure-img img {
+    display: block;
+    max-inline-size: 100%;
+    margin-inline: auto;
+    border-radius: var(--border-radius);
+  }
+  
+  .figure-video {
+    max-inline-size: var(--content-max-width);
+    padding-inline: 30px;
+    margin-block: 15px;
+    margin-inline: auto;
+  }
+
+  .figure-video video {
+    display: block;
+    max-inline-size: 100%;
+    margin-inline: auto;
+  }
+
+  .figure-iframe {
+    inline-size: 100%;
+    margin-block: 15px;
+  }
+
+  .figure-iframe iframe {
+    display: block;
+    inline-size: 100%;
+    max-inline-size: var(--content-max-width);
+    margin-inline: auto;
+    block-size: 640px;
+    border: 1px solid var(--tertiary-color);
+    border-radius: var(--border-radius);
+  }
+
+  strong {
+    font-weight: normal;
+    text-decoration: underline;
+  }
+</style>
+
+<section>
+  <p></p><p style="color: rgba(127, 127, 127, 0.9);">由于最近在组内推广我写的基于flask的框架, 可能会被问到一些基于flask的相对底层的问题. 所以重新学习了一下flask, wsgi和asgi. 趁此机会整理一个小系列出来, 这是第一篇.</p><p></p>
+<p>wsgi是一个软件层面的接口(协议).<br>
+解决server(gunicorn)和web application(flask)之间的通信问题.<br>
+wsgi分成三个部分, 服务端, 中间件和客户端. 其中中间件是可选的.</p>
+<h2 id="webservice">普通的web service</h2>
+<p>在不考虑wsgi的情况下, 一个简单的web服务是这样的.  </p>
+<pre><code class="python language-python">import socket
+
+EOL1 = b"\n\n"
+EOL2 = b"\n\r\n"
+body = """&lt;html&gt;Hello, world!&lt;html&gt;"""
+response_prams = [
+    "HTTP/1.0 200 OK",
+    "Date: Sat, 27 Jun 2028 13:00:00 GMT",
+    "Content-Type: text/html; charset=utf-8",
+    "Content-Length: {}".format(len(body)),
+    "",
+    body,
+]
+response = "\r\n".join(response_prams)
+
+
+def handle_connection(conn, addr):
+    request = b""
+    while EOL1 not in request and EOL2 not in request:
+        request += conn.recv(1024)
+    print(request)
+    conn.send(response.encode())
+    conn.close()
+
+
+def main():
+    serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    serversocket.bind(("127.0.0.1", 8000))
+    serversocket.listen(5)
+    print("http://127.0.0.1:8000")
+    try:
+        while True:
+            conn, addr = serversocket.accept()
+            handle_connection(conn, addr)
+    except KeyboardInterrupt:
+        serversocket.close()
+
+
+if __name__ == "__main__":
+    main()
+</code></pre>
+<h2 id="wsgi">WSGI具体内容</h2>
+<h3 id="">客户端</h3>
+<pre><code class="python language-python">def application(environ, start_response):
+    start_response('200 OK', [('Content-Type', 'text/html')])
+    return [b'&lt;h1&gt;Hello, web!&lt;/h1&gt;']
+</code></pre>
+<p>environ, 字典, 保存http相关的信息
+<a href="https://peps.python.org/pep-3333/#environ-variables">https://peps.python.org/pep-3333/#environ-variables</a></p>
+<pre><code class="python language-python">{
+    'REQUEST_METHOD': 'GET',
+    'PATH_INFO': '/index.html',
+    'QUERY_STRING': '',
+    'CONTENT_TYPE': '',
+    'CONTENT_LENGTH': '',
+}
+</code></pre>
+<p>start_response 回调,两个参数, 第一个参数和状态码相关, 第二个参数和header相关<br>
+<code>start_response('200 OK', [('Content-Type', 'text/html')])</code></p>
+<p>返回值, 是一个可迭代对象, 里面是<strong>字节串</strong>, 内容是body.</p>
+<h3 id="-1">服务器</h3>
+<p>可以参考gunicorn的源码
+<a href="https://github.com/benoitc/gunicorn/blob/master/gunicorn/workers/sync.py">https://github.com/benoitc/gunicorn/blob/master/gunicorn/workers/sync.py</a></p>
+<p>commit id: 5b68c17b170c7b021a7a982a06c08e3898a5a640</p>
+<p>其中<code>respiter = self.wsgi(environ, resp.start_response)</code> 调用了application</p>
+<pre><code class="python language-python">def handle_request(self, listener, req, client, addr):
+    environ = {}
+    resp = None
+    try:
+        ...
+        respiter = self.wsgi(environ, resp.start_response)
+        try:
+            if isinstance(respiter, environ['wsgi.file_wrapper']):
+                resp.write_file(respiter)
+            else:
+                for item in respiter:
+                    resp.write(item)
+            resp.close()
+        finally:
+            request_time = datetime.now() - request_start
+            self.log.access(resp, req, environ, request_time)
+            if hasattr(respiter, "close"):
+                respiter.close()
+</code></pre>
+<h3 id="-2">中间件</h3>
+<p>中间件不是必须的, 在gunicorn和flask的组合中, 默认是没有中间件的.<br>
+当初制定wsgi协议的时候, 作者一开始的想法是将app设计成类似插件的形式, 每个app都非常轻, 通过中间件的方式, 将多个app组合在一起.<br>
+最后发展成一个框架统一天下, 不需要中间件的样子.
+中间件的格式很简单, 实现客户端的同时调用(另一个)客户端.  </p>
+<p>举个例子, <code>def __call__(</code> 这部分是客户端.<br>
+<code>return self.app(environ, start_response)</code> 这部分是<strong>调用</strong>客户端.  </p>
+<pre><code class="python language-python">from your_application import app
+from your_application.admin import app as admin_app
+
+class DispatcherMiddleware:
+    def __init__(
+        self,
+        app: WSGIApplication,
+        mounts: dict[str, WSGIApplication] | None = None,
+    ) -&gt; None:
+        self.app = app
+        self.mounts = mounts or {}
+
+    def __call__(
+        self, environ: WSGIEnvironment, start_response: StartResponse
+    ) -&gt; t.Iterable[bytes]:
+        script = environ.get("PATH_INFO", "")
+        path_info = ""
+
+        while "/" in script:
+            if script in self.mounts:
+                app = self.mounts[script]
+                break
+
+            script, last_item = script.rsplit("/", 1)
+            path_info = f"/{last_item}{path_info}"
+        else:
+            app = self.mounts.get(script, self.app)
+
+        original_script_name = environ.get("SCRIPT_NAME", "")
+        environ["SCRIPT_NAME"] = original_script_name + script
+        environ["PATH_INFO"] = path_info
+        return app(environ, start_response)
+
+application = DispatcherMiddleware(app, {'/admin': admin_app})
+</code></pre>
+</section>
+
+    
+  </article>
+  
+    
+<style>
+  .article-actions {
+    max-inline-size: var(--content-max-width);
+
+    display: flex;
+    align-items: center;
+
+    margin-block: 40px;
+    margin-inline: auto;
+    padding-inline: 30px;
+
+    font-family: common_font;
+    color: var(--normal-color);
+  }
+
+  .article-actions_action:not(:last-child)::after {
+    content: '·\00a0';
+  }
+
+  .article-actions_action > a {
+    color: inherit;
+    text-decoration-color: var(--primary-color);
+  }
+
+  @media (max-width: 520px) {
+    .article-actions {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .article-actions_action::before {
+      content: '·';
+    }
+
+    .article-actions_action:not(:last-child)::after {
+      content: '';
+    }
+  }
+</style>
+
+<div class="article-actions">
+  <span class="article-actions_action">
+    使用 <a href="https://github.com/chaleaoch/animal-photosynthesis/discussions">Discussions</a> 讨论
+  </span>
+  <span class="article-actions_action">
+    在 <a href="https://github.com/chaleaoch/animal-photosynthesis/edit/master/articles/wsgi介绍/index.md">Github</a> 上编辑
+  </span>
+  <span class="article-actions_action">
+    分享到 <a href="https://www.twitter.com/share?text=wsgi%E4%BB%8B%E7%BB%8D&amp;url=https%3A%2F%2Fchaleaoch.com%2Fwsgi%E4%BB%8B%E7%BB%8D">Twitter</a>
+  </span>
+</div>
+
+  
+  <!-- <script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8404651063516637"
+  crossorigin="anonymous"
+></script>
+<style>
+  .adsbygoogle {
+    max-width: 100%;
+    margin-block: 40px;
+    overflow: hidden;
+    text-align: center;
+  }
+
+  .adsbygoogle:empty {
+    display: none;
+  }
+</style>
+<ins
+  class="adsbygoogle"
+  style="display:block"
+  data-ad-client="ca-pub-8404651063516637"
+  data-ad-slot="7746538242"
+  data-ad-format="auto"
+  data-full-width-responsive="true"
+></ins>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+ -->
+  <style>
+.page-footer {
+  font-size: 12px;
+  max-inline-size: var(--content-max-width);
+  margin-block: 40px;
+  margin-inline: auto;
+  padding-inline: 30px;
+  font-family: common_font;
+  color: var(--secondary-color);
+}
+
+.page-footer > a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.page-footer > a:hover {
+  color: var(--primary-color);
+}
+
+.page-footer > .underline {
+  text-decoration: underline;
+}
+</style>
+
+<footer class="page-footer">
+  <a href="https://github.com/chaleaoch/animal-photosynthesis/blob/master/license">©</a>
+  2024
+  &nbsp;
+  <!-- <a class="underline" href="https://i.mebtte.com">MEBTTE</a> -->
+  <!-- &nbsp;|&nbsp; -->
+  <!-- <a class="underline" href="https://stats.uptimerobot.com/4nO5RUYB60">UPTIME</a>
+  &nbsp;|&nbsp; -->
+  <!-- <a class="underline" href="/support">支持我</a> -->
+</footer>
+
+  <script src="/39c97c2884c3a2b5e64c8f085b843d4e.js"></script>
+  <script src="/0ec215ad131a36856d3d20423b9aca26.js" async="" defer=""></script>
+
+
+
+</body></html>

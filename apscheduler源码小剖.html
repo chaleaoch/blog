@@ -1,0 +1,591 @@
+<!DOCTYPE html><html lang="zh-cn"><head>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="chaleaoch">
+<meta name="keywords" content="HTML, CSS, JavaScript, Web, Front-End">
+
+<!-- Google Analytics -->
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-CESZTRKM96"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-CESZTRKM96');
+</script>
+
+<!-- open graph -->
+<meta property="og:type" content="website">
+<meta property="og:image" content="/6ed5faa0573b2a5a9d47232c9a71fb88.png">
+
+<link rel="shortcut icon" type="image/png" href="/6ed5faa0573b2a5a9d47232c9a71fb88.png">
+<link rel="sitemap" type="application/xml" href="/sitemap.xml">
+
+<link rel="preload" href="/1acfd736cd99e3dea4bc1ded904b2589.ttf" as="font" crossorigin="anonymous">
+<link rel="preload" href="/80ff3b2d122ff544e38b3f4633c7976a.ttf" as="font" crossorigin="anonymous">
+
+  <style>
+  @font-face {
+    font-family: common_font;
+    src: url(/80ff3b2d122ff544e38b3f4633c7976a.ttf);
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    --content-max-width: 840px;
+
+    --primary-color: rgb(237 106 94);
+
+    --normal-color: #333;
+    --secondary-color: #888;
+    --tertiary-color: #ddd;
+    --backgroud: rgb(255 255 255);
+
+    --border-radius: 2px;
+    --transition-duration: 0.3s;
+
+    background-color: var(--backgroud);
+    transition: background-color var(--transition-duration);
+  }
+
+  figure {
+    margin-inline: 0;
+  }
+</style>
+
+
+  <title>apscheduler小剖 - 志超说</title>
+  <meta name="description" content="<p style=&quot;color: rgba(127, 127, 127, 0.9);&quot;>前段时间同事问我, 如果直接修改apscheduler的数据库信息, 是否可以让job快速运行. 答案当然是否定的, 具体原因需要结合代码解释, 这就是本文的由来.<p>  无论是官网还是源码, 都很清晰的表达a......">
+  <meta property="og:description" content="<p style=&quot;color: rgba(127, 127, 127, 0.9);&quot;>前段时间同事问我, 如果直接修改apscheduler的数据库信息, 是否可以让job快速运行. 答案当然是否定的, 具体原因需要结合代码解释, 这就是本文的由来.<p>  无论是官网还是源码, 都很清晰的表达a......">
+
+  <link rel="preload" href="/491a7c6dbe2ec78b481a24a3fd6e1e20.ttf" as="font" crossorigin="anonymous">
+  <style>
+    @font-face {
+      font-family: article_font_apscheduler源码小剖;
+      src: url(/491a7c6dbe2ec78b481a24a3fd6e1e20.ttf);
+    }
+    article {
+      font-family: article_font_apscheduler源码小剖;
+    }
+  </style>
+  
+  <link rel="stylesheet" href="/ece570de77ba673c17121d06fc929bd9.css">
+</head>
+
+<body>
+  <style>
+  @font-face {
+    font-family: title_font;
+    src: url(/1acfd736cd99e3dea4bc1ded904b2589.ttf);
+  }
+
+  .page-header {
+    max-inline-size: var(--content-max-width);
+    margin-block: 50px 40px;
+    margin-inline: auto;
+    padding-inline: 30px;
+    display: flex;
+    align-items: center;
+  }
+
+  .page-header_title {
+    flex: 1;
+    min-inline-size: 0;
+    font-size: min(8vw, 56px);
+    font-family: title_font;
+    margin: 0;
+    color: var(--normal-color);
+  }
+
+  .page-header_title > a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .page-header_icon {
+    margin-inline-start: 10px;
+  }
+
+  .page-header_icon > img {
+    user-select: none;
+    inline-size: 20px;
+    block-size: 20px;
+  }
+</style>
+
+<header class="page-header">
+  
+    <h2 class="page-header_title">
+      <a href="/">志超说</a>
+    </h2>
+  
+  <a class="page-header_icon" href="/rss.xml" target="_blank">
+    <img src="/e31ad23031e5bcb34e8d4a424ba0c100.png" alt="rss">
+  </a>
+  <a class="page-header_icon" href="https://github.com/chaleaoch/animal-photosynthesis" target="_blank">
+    <img src="/184c800e11079b13904f308161071b62.png" alt="github">
+  </a>
+  <!-- <a class="page-header_icon" href="//i.mebtte.com" target="_blank">
+    <img src="/author.png" alt="author" />
+  </a> -->
+</header>
+
+  <article>
+    <style>
+.article-header {
+  max-inline-size: var(--content-max-width);
+  margin-block: 40px;
+  margin-inline: auto;
+  padding-inline: 30px;
+}
+
+.article-title {
+  color: var(--primary-color);
+  font-size: 32px;
+  margin: 0;
+  padding: 0;
+  line-height: 1.5;
+}
+
+.article-title a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.article-publish-time {
+  color: var(--secondary-color);
+  font-size: 14px;
+  font-family: common_font;
+}
+</style>
+
+<section class="article-header">
+  <h1 class="article-title">
+    <a href="/apscheduler源码小剖">apscheduler小剖</a>
+  </h1>
+  <time class="article-publish-time">2024-05-04</time>
+</section>
+
+    <style>
+  article {
+    --article-space: 30px;
+  }
+
+  article a {
+    color: var(--normal-color);
+    text-decoration-color: var(--primary-color);
+  }
+
+  article h2, article h3, article h4, article h5, article h6 {
+    max-inline-size: var(--content-max-width);
+    padding-inline: 30px;
+    margin-inline: auto;
+    line-height: 1.5;
+    color: var(--normal-color);
+  }
+
+  article h2 {
+    margin-block-start: 28px;
+    font-size: 28px;
+  }
+
+  article h3 {
+    margin-block-start: 26px;
+    font-size: 25px;
+  }
+
+  article h4 {
+    margin-block-start: 24px;
+    font-size: 22px;
+  }
+
+  article h5 {
+    margin-block-start: 22px;
+    font-size: 19px;
+  }
+
+  article h6 {
+    margin-block-start: 20px;
+    font-size: 16px;
+  }
+
+  article p {
+    max-inline-size: var(--content-max-width);
+
+    margin-block: 15px;
+    margin-inline: auto;
+    padding-inline: 30px;
+
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--normal-color);
+    word-break: break-word;
+  }
+
+  article p code, article ul code, article ol code, article table code {
+    padding-inline: 4px;
+    border-radius: var(--border-radius);
+    background: rgba(237, 106, 94, 0.3);
+  }
+
+  article pre {
+    max-inline-size: var(--content-max-width) !important;
+    margin-block: 15px !important;
+    margin-inline: auto !important;
+    font-size: 14px !important;
+    box-sizing: border-box;
+    border-radius: var(--border-radius) !important;
+    tab-size: 2 !important;
+    padding: 0 !important;
+  }
+
+  article pre code {
+    display: block;
+    margin-block: 20px !important;
+    margin-inline: 30px !important;
+    overflow: auto !important;
+    font-size: inherit !important;
+  }
+
+  article hr {
+    max-inline-size: var(--content-max-width);
+    margin-block: 40px;
+    margin-inline: auto;
+    padding-inline: var(--article-space);
+    border: none;
+  }
+
+  article hr::after{
+    content: '';
+    display: block;
+    block-size: 1px;
+    background-color:var(--tertiary-color);
+  }
+
+  article blockquote {
+    max-inline-size: var(--content-max-width);
+    padding-inline: var(--article-space);
+    margin-block: 15px;
+    margin-inline: auto;
+    position: relative;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--secondary-color);
+  }
+
+  .table-container {
+    max-inline-size: var(--content-max-width);
+    padding-inline: 30px;
+    margin-block: 15px;
+    margin-inline: auto;
+  }
+
+  .table-container table {
+    border-collapse: collapse;
+  }
+
+  .table-container th, .table-container td {
+    font-size: 14px;
+    color: var(--normal-color);
+    border: 1px solid var(--tertiary-color);
+    padding: 10px;
+    text-align: left;
+  }
+
+  .table-container th {
+    font-size: 16px;
+    text-align: left;
+  }
+
+  article blockquote::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 30px;
+    inline-size: 3px;
+    block-size: 100%;
+    background-color: var(--primary-color);
+  }
+
+  article blockquote p {
+    font-size: 16px;
+    color: inherit;
+    max-inline-size: unset;
+    padding: 0;
+    margin-inline-start: 30px;
+  }
+
+  article ul,
+  article ol {
+    max-inline-size: var(--content-max-width);
+    padding-inline: 30px;
+    margin-block: 15px;
+    margin-inline: auto;
+    color: var(--normal-color);
+    line-height: 1.5;
+  }
+
+  article ol {
+    counter-reset: li-count;
+  }
+  
+  article ul li, article ol li {
+    display: block;
+    margin-block: 5px;
+    position: relative;
+  }
+
+  article ol li {
+    counter-increment: li-count;
+  }
+
+  article ul li::before {
+    content: '';
+    display: inline-block;
+    inline-size: 6px;
+    block-size: 6px;
+
+    margin-inline-end: 10px;
+
+    vertical-align: middle;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+  }
+
+  article ol li::before {
+    content: counter( li-count) '. ';
+    color: var(--primary-color);
+  }
+
+  article figcaption {
+    font-size: 12px;
+    color: var(--secondary-color);
+    text-align: center;
+    margin-block-start: 5px;
+  }
+
+  .figure-img {
+    max-inline-size: var(--content-max-width);
+    padding-inline: 30px;
+    margin-block: 15px;
+    margin-inline: auto;
+  }
+
+  .figure-img img {
+    display: block;
+    max-inline-size: 100%;
+    margin-inline: auto;
+    border-radius: var(--border-radius);
+  }
+  
+  .figure-video {
+    max-inline-size: var(--content-max-width);
+    padding-inline: 30px;
+    margin-block: 15px;
+    margin-inline: auto;
+  }
+
+  .figure-video video {
+    display: block;
+    max-inline-size: 100%;
+    margin-inline: auto;
+  }
+
+  .figure-iframe {
+    inline-size: 100%;
+    margin-block: 15px;
+  }
+
+  .figure-iframe iframe {
+    display: block;
+    inline-size: 100%;
+    max-inline-size: var(--content-max-width);
+    margin-inline: auto;
+    block-size: 640px;
+    border: 1px solid var(--tertiary-color);
+    border-radius: var(--border-radius);
+  }
+
+  strong {
+    font-weight: normal;
+    text-decoration: underline;
+  }
+</style>
+
+<section>
+  <p></p><p style="color: rgba(127, 127, 127, 0.9);">前段时间同事问我, 如果直接修改apscheduler的数据库信息, 是否可以让job快速运行. 答案当然是否定的, 具体原因需要结合代码解释, 这就是本文的由来.</p><p></p>
+<p>无论是官网还是源码, 都很清晰的表达apscheduler由四个部分组成.</p>
+<ol>
+<li>executor 管干活的, 譬如线程池</li>
+<li>jobstores 存储job的地方, 主要用途是将job持久化, 重启apscheduler之后可以继续执行.</li>
+<li>triggers 触发器, 用于计算job下次运行时间</li>
+<li>scheduler 主体进程, 负责调度job</li>
+</ol>
+<p>源码只取各个组件的最简单的例子进行讲解, 基本原理搞懂就可以了, 对自己的要求不高😀</p>
+<h2 id="scheduler">scheduler</h2>
+<p>取最简单的BlockingScheduler, 他的核心方法是<code>_process_jobs</code>, 用于循环调度job<a href="https://github.com/agronholm/apscheduler/blob/3.x/apscheduler/schedulers/base.py#L941"></a><a href="https://github.com/agronholm/apscheduler/blob/3.x/apscheduler/schedulers/base.py#L941">https://github.com/agronholm/apscheduler/blob/3.x/apscheduler/schedulers/base.py#L941</a></p>
+<ol>
+<li>第一步, 从job store中获取所有到期的job列表 <code>due_jobs = jobstore.get_due_jobs(now)</code></li>
+<li>第二步, 上job中找executor <code>executor = self._lookup_executor(job.executor)</code></li>
+<li>第三步, 在executor上执行job <code>executor.submit_job(job, run_times)</code></li>
+<li>第四步, 计算这个job下一次什么时候运行, <code>job.trigger.get_next_fire_time(run_times[-1], now)</code></li>
+<li>第五步, 更新job store信息, 方便下一次循环中的第一步执行获取到期job列表 <code>jobstore.update_job(job)</code></li>
+<li>第六步, 通过jobstore计算下一次唤醒时间, 然后sleep, 释放cpu资源</li>
+</ol>
+<pre><code class="python language-python">while self.state != STATE_STOPPED:
+    self._event.wait(wait_seconds)
+    self._event.clear()
+    wait_seconds = self._process_jobs()
+</code></pre>
+<p>余下的功能无非就是add<em>job, remove</em>job等方法在正常处理业务逻辑之外,需要实时唤醒scheduler,原理是event中的set()方法, 在源码中,可以看到多次调用<code>self.wakeup()</code> 实际上执行的代码是 <code>self._event.set()</code></p>
+<h2 id="jobstore">jobstore</h2>
+<p>以redis举例吧.</p>
+<pre><code class="python language-python">def get_due_jobs(self, now):
+    timestamp = datetime_to_utc_timestamp(now)
+    job_ids = self.redis.zrangebyscore(self.run_times_key, 0, timestamp)
+    if job_ids:
+        job_states = self.redis.hmget(self.jobs_key, *job_ids)
+        return self._reconstitute_jobs(six.moves.zip(job_ids, job_states))
+    return []
+</code></pre>
+<p>看到这里, 文章开头的问题实际上就可以解答了, 如果直接修改数据库信息, get<em>next</em>fire_time并不会更新,需要在一个循环之后才会更新, 所以job并不会立即执行.</p>
+<h2 id="executor">executor</h2>
+<p>简单解释一下上文中的<code>submit_job</code>
+<code>f = self._pool.submit(run_job, job, job._jobstore_alias, run_times, self._logger.name)</code></p>
+<h2 id="">其他</h2>
+<p>trigger我没看, 因为crontab太复杂, interval太简单, 不需要看哈哈…
+apscheduler看到这种程度,针对应用层的开发我觉得足够了.调用api的时候大概知道其中的原理, 做到心中有数还是很有必要的, 关键是这个库的源码很简单, 也很好理解, 看了也就看了, 不会花太多的时间.
+还有就是apscheduler中的monitor感兴趣的同行可以看看.</p>
+</section>
+
+    
+  </article>
+  
+    
+<style>
+  .article-actions {
+    max-inline-size: var(--content-max-width);
+
+    display: flex;
+    align-items: center;
+
+    margin-block: 40px;
+    margin-inline: auto;
+    padding-inline: 30px;
+
+    font-family: common_font;
+    color: var(--normal-color);
+  }
+
+  .article-actions_action:not(:last-child)::after {
+    content: '·\00a0';
+  }
+
+  .article-actions_action > a {
+    color: inherit;
+    text-decoration-color: var(--primary-color);
+  }
+
+  @media (max-width: 520px) {
+    .article-actions {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .article-actions_action::before {
+      content: '·';
+    }
+
+    .article-actions_action:not(:last-child)::after {
+      content: '';
+    }
+  }
+</style>
+
+<div class="article-actions">
+  <span class="article-actions_action">
+    使用 <a href="https://github.com/chaleaoch/animal-photosynthesis/discussions">Discussions</a> 讨论
+  </span>
+  <span class="article-actions_action">
+    在 <a href="https://github.com/chaleaoch/animal-photosynthesis/edit/master/articles/apscheduler源码小剖/index.md">Github</a> 上编辑
+  </span>
+  <span class="article-actions_action">
+    分享到 <a href="https://www.twitter.com/share?text=apscheduler%E5%B0%8F%E5%89%96&amp;url=https%3A%2F%2Fchaleaoch.com%2Fapscheduler%E6%BA%90%E7%A0%81%E5%B0%8F%E5%89%96">Twitter</a>
+  </span>
+</div>
+
+  
+  <!-- <script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8404651063516637"
+  crossorigin="anonymous"
+></script>
+<style>
+  .adsbygoogle {
+    max-width: 100%;
+    margin-block: 40px;
+    overflow: hidden;
+    text-align: center;
+  }
+
+  .adsbygoogle:empty {
+    display: none;
+  }
+</style>
+<ins
+  class="adsbygoogle"
+  style="display:block"
+  data-ad-client="ca-pub-8404651063516637"
+  data-ad-slot="7746538242"
+  data-ad-format="auto"
+  data-full-width-responsive="true"
+></ins>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+ -->
+  <style>
+.page-footer {
+  font-size: 12px;
+  max-inline-size: var(--content-max-width);
+  margin-block: 40px;
+  margin-inline: auto;
+  padding-inline: 30px;
+  font-family: common_font;
+  color: var(--secondary-color);
+}
+
+.page-footer > a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.page-footer > a:hover {
+  color: var(--primary-color);
+}
+
+.page-footer > .underline {
+  text-decoration: underline;
+}
+</style>
+
+<footer class="page-footer">
+  <a href="https://github.com/chaleaoch/animal-photosynthesis/blob/master/license">©</a>
+  2024
+  &nbsp;
+  <!-- <a class="underline" href="https://i.mebtte.com">MEBTTE</a> -->
+  <!-- &nbsp;|&nbsp; -->
+  <!-- <a class="underline" href="https://stats.uptimerobot.com/4nO5RUYB60">UPTIME</a>
+  &nbsp;|&nbsp; -->
+  <!-- <a class="underline" href="/support">支持我</a> -->
+</footer>
+
+  <script src="/39c97c2884c3a2b5e64c8f085b843d4e.js"></script>
+  <script src="/0ec215ad131a36856d3d20423b9aca26.js" async="" defer=""></script>
+
+
+
+</body></html>

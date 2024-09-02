@@ -1,0 +1,638 @@
+<!DOCTYPE html><html lang="zh-cn"><head>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="chaleaoch">
+<meta name="keywords" content="HTML, CSS, JavaScript, Web, Front-End">
+
+<!-- Google Analytics -->
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-CESZTRKM96"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-CESZTRKM96');
+</script>
+
+<!-- open graph -->
+<meta property="og:type" content="website">
+<meta property="og:image" content="/6ed5faa0573b2a5a9d47232c9a71fb88.png">
+
+<link rel="shortcut icon" type="image/png" href="/6ed5faa0573b2a5a9d47232c9a71fb88.png">
+<link rel="sitemap" type="application/xml" href="/sitemap.xml">
+
+<link rel="preload" href="/1acfd736cd99e3dea4bc1ded904b2589.ttf" as="font" crossorigin="anonymous">
+<link rel="preload" href="/80ff3b2d122ff544e38b3f4633c7976a.ttf" as="font" crossorigin="anonymous">
+
+  <style>
+  @font-face {
+    font-family: common_font;
+    src: url(/80ff3b2d122ff544e38b3f4633c7976a.ttf);
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    --content-max-width: 840px;
+
+    --primary-color: rgb(237 106 94);
+
+    --normal-color: #333;
+    --secondary-color: #888;
+    --tertiary-color: #ddd;
+    --backgroud: rgb(255 255 255);
+
+    --border-radius: 2px;
+    --transition-duration: 0.3s;
+
+    background-color: var(--backgroud);
+    transition: background-color var(--transition-duration);
+  }
+
+  figure {
+    margin-inline: 0;
+  }
+</style>
+
+
+  <title>python对属性的搜索优先级 - 志超说</title>
+  <meta name="description" content="当获取元素的时候，实际上调用的是`object.__getattribute__(key)` 所谓的搜索优先级实际上是`object.__getattribute__(key)`实现的  Data Descriptor和Non-data Descriptor的不同体现在关于实例字典条目的覆盖和计算顺......">
+  <meta property="og:description" content="当获取元素的时候，实际上调用的是`object.__getattribute__(key)` 所谓的搜索优先级实际上是`object.__getattribute__(key)`实现的  Data Descriptor和Non-data Descriptor的不同体现在关于实例字典条目的覆盖和计算顺......">
+
+  <link rel="preload" href="/5b8bb1b14776a18909f0b28dab2703a2.ttf" as="font" crossorigin="anonymous">
+  <style>
+    @font-face {
+      font-family: article_font_python对属性的搜索优先级;
+      src: url(/5b8bb1b14776a18909f0b28dab2703a2.ttf);
+    }
+    article {
+      font-family: article_font_python对属性的搜索优先级;
+    }
+  </style>
+  
+  <link rel="stylesheet" href="/ece570de77ba673c17121d06fc929bd9.css">
+</head>
+
+<body>
+  <style>
+  @font-face {
+    font-family: title_font;
+    src: url(/1acfd736cd99e3dea4bc1ded904b2589.ttf);
+  }
+
+  .page-header {
+    max-inline-size: var(--content-max-width);
+    margin-block: 50px 40px;
+    margin-inline: auto;
+    padding-inline: 30px;
+    display: flex;
+    align-items: center;
+  }
+
+  .page-header_title {
+    flex: 1;
+    min-inline-size: 0;
+    font-size: min(8vw, 56px);
+    font-family: title_font;
+    margin: 0;
+    color: var(--normal-color);
+  }
+
+  .page-header_title > a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .page-header_icon {
+    margin-inline-start: 10px;
+  }
+
+  .page-header_icon > img {
+    user-select: none;
+    inline-size: 20px;
+    block-size: 20px;
+  }
+</style>
+
+<header class="page-header">
+  
+    <h2 class="page-header_title">
+      <a href="/">志超说</a>
+    </h2>
+  
+  <a class="page-header_icon" href="/rss.xml" target="_blank">
+    <img src="/e31ad23031e5bcb34e8d4a424ba0c100.png" alt="rss">
+  </a>
+  <a class="page-header_icon" href="https://github.com/chaleaoch/animal-photosynthesis" target="_blank">
+    <img src="/184c800e11079b13904f308161071b62.png" alt="github">
+  </a>
+  <!-- <a class="page-header_icon" href="//i.mebtte.com" target="_blank">
+    <img src="/author.png" alt="author" />
+  </a> -->
+</header>
+
+  <article>
+    <style>
+.article-header {
+  max-inline-size: var(--content-max-width);
+  margin-block: 40px;
+  margin-inline: auto;
+  padding-inline: 30px;
+}
+
+.article-title {
+  color: var(--primary-color);
+  font-size: 32px;
+  margin: 0;
+  padding: 0;
+  line-height: 1.5;
+}
+
+.article-title a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.article-publish-time {
+  color: var(--secondary-color);
+  font-size: 14px;
+  font-family: common_font;
+}
+</style>
+
+<section class="article-header">
+  <h1 class="article-title">
+    <a href="/python对属性的搜索优先级">python对属性的搜索优先级</a>
+  </h1>
+  <time class="article-publish-time">2023-07-28</time>
+</section>
+
+    <style>
+  article {
+    --article-space: 30px;
+  }
+
+  article a {
+    color: var(--normal-color);
+    text-decoration-color: var(--primary-color);
+  }
+
+  article h2, article h3, article h4, article h5, article h6 {
+    max-inline-size: var(--content-max-width);
+    padding-inline: 30px;
+    margin-inline: auto;
+    line-height: 1.5;
+    color: var(--normal-color);
+  }
+
+  article h2 {
+    margin-block-start: 28px;
+    font-size: 28px;
+  }
+
+  article h3 {
+    margin-block-start: 26px;
+    font-size: 25px;
+  }
+
+  article h4 {
+    margin-block-start: 24px;
+    font-size: 22px;
+  }
+
+  article h5 {
+    margin-block-start: 22px;
+    font-size: 19px;
+  }
+
+  article h6 {
+    margin-block-start: 20px;
+    font-size: 16px;
+  }
+
+  article p {
+    max-inline-size: var(--content-max-width);
+
+    margin-block: 15px;
+    margin-inline: auto;
+    padding-inline: 30px;
+
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--normal-color);
+    word-break: break-word;
+  }
+
+  article p code, article ul code, article ol code, article table code {
+    padding-inline: 4px;
+    border-radius: var(--border-radius);
+    background: rgba(237, 106, 94, 0.3);
+  }
+
+  article pre {
+    max-inline-size: var(--content-max-width) !important;
+    margin-block: 15px !important;
+    margin-inline: auto !important;
+    font-size: 14px !important;
+    box-sizing: border-box;
+    border-radius: var(--border-radius) !important;
+    tab-size: 2 !important;
+    padding: 0 !important;
+  }
+
+  article pre code {
+    display: block;
+    margin-block: 20px !important;
+    margin-inline: 30px !important;
+    overflow: auto !important;
+    font-size: inherit !important;
+  }
+
+  article hr {
+    max-inline-size: var(--content-max-width);
+    margin-block: 40px;
+    margin-inline: auto;
+    padding-inline: var(--article-space);
+    border: none;
+  }
+
+  article hr::after{
+    content: '';
+    display: block;
+    block-size: 1px;
+    background-color:var(--tertiary-color);
+  }
+
+  article blockquote {
+    max-inline-size: var(--content-max-width);
+    padding-inline: var(--article-space);
+    margin-block: 15px;
+    margin-inline: auto;
+    position: relative;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--secondary-color);
+  }
+
+  .table-container {
+    max-inline-size: var(--content-max-width);
+    padding-inline: 30px;
+    margin-block: 15px;
+    margin-inline: auto;
+  }
+
+  .table-container table {
+    border-collapse: collapse;
+  }
+
+  .table-container th, .table-container td {
+    font-size: 14px;
+    color: var(--normal-color);
+    border: 1px solid var(--tertiary-color);
+    padding: 10px;
+    text-align: left;
+  }
+
+  .table-container th {
+    font-size: 16px;
+    text-align: left;
+  }
+
+  article blockquote::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 30px;
+    inline-size: 3px;
+    block-size: 100%;
+    background-color: var(--primary-color);
+  }
+
+  article blockquote p {
+    font-size: 16px;
+    color: inherit;
+    max-inline-size: unset;
+    padding: 0;
+    margin-inline-start: 30px;
+  }
+
+  article ul,
+  article ol {
+    max-inline-size: var(--content-max-width);
+    padding-inline: 30px;
+    margin-block: 15px;
+    margin-inline: auto;
+    color: var(--normal-color);
+    line-height: 1.5;
+  }
+
+  article ol {
+    counter-reset: li-count;
+  }
+  
+  article ul li, article ol li {
+    display: block;
+    margin-block: 5px;
+    position: relative;
+  }
+
+  article ol li {
+    counter-increment: li-count;
+  }
+
+  article ul li::before {
+    content: '';
+    display: inline-block;
+    inline-size: 6px;
+    block-size: 6px;
+
+    margin-inline-end: 10px;
+
+    vertical-align: middle;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+  }
+
+  article ol li::before {
+    content: counter( li-count) '. ';
+    color: var(--primary-color);
+  }
+
+  article figcaption {
+    font-size: 12px;
+    color: var(--secondary-color);
+    text-align: center;
+    margin-block-start: 5px;
+  }
+
+  .figure-img {
+    max-inline-size: var(--content-max-width);
+    padding-inline: 30px;
+    margin-block: 15px;
+    margin-inline: auto;
+  }
+
+  .figure-img img {
+    display: block;
+    max-inline-size: 100%;
+    margin-inline: auto;
+    border-radius: var(--border-radius);
+  }
+  
+  .figure-video {
+    max-inline-size: var(--content-max-width);
+    padding-inline: 30px;
+    margin-block: 15px;
+    margin-inline: auto;
+  }
+
+  .figure-video video {
+    display: block;
+    max-inline-size: 100%;
+    margin-inline: auto;
+  }
+
+  .figure-iframe {
+    inline-size: 100%;
+    margin-block: 15px;
+  }
+
+  .figure-iframe iframe {
+    display: block;
+    inline-size: 100%;
+    max-inline-size: var(--content-max-width);
+    margin-inline: auto;
+    block-size: 640px;
+    border: 1px solid var(--tertiary-color);
+    border-radius: var(--border-radius);
+  }
+
+  strong {
+    font-weight: normal;
+    text-decoration: underline;
+  }
+</style>
+
+<section>
+  <p>当获取元素的时候，实际上调用的是<code>object.__getattribute__(key)</code>
+所谓的搜索优先级实际上是<code>object.__getattribute__(key)</code>实现的</p>
+<p>Data Descriptor和Non-data Descriptor的不同体现在关于实例字典条目的覆盖和计算顺序上。
+如果实例字典中包含了与Data Descriptor同名的属性，那么Data Descriptor优先。
+如果实例字典中包含了与Non-data Descriptor同名的属性，实例字典优先。  </p>
+<p>同时定义<strong>get</strong>()和<strong>set</strong>()方法，并且<strong>set</strong>()在调用时抛出AttributeError异常，就可以创建一个只读的Data Descriptor。
+只需要定义一个抛出异常的<strong>set</strong>()方法就足以让该对象成为Data Descriptor。</p>
+<pre><code class="python language-python">class demo(object):# 非数据描述符
+    def __init__(self, *args, **kwargs):
+        self.args = args
+        self.kwargs = kwargs
+
+    def __get__(self, instance, owner):
+        return owner.__dict__[type(self).__name__](instance, *self.args, **self.kwargs)
+
+class Descriptor(object):
+    def __get__(self, instance, owner):
+        return 'Descriptor'
+    def __set__(self, instance, value):
+        pass
+class FOO(object):
+    def __getattr__(self, item):
+        return '__getattr__'
+    def __init__(self, *args, **kwargs):
+        pass
+    # attr = Descriptor()
+    demo = demo()
+    # def demo(self):
+    #    pass
+    def __del__(self):
+        pass
+foo = FOO(1, 2, 3)
+
+# foo.attr = 'instance attr'
+# FOO.attr = 'class attr'
+# type(foo).__dict__['attr'].__get__(foo, type(foo))
+# FOO.__dict__['attr'].__get__(None, FOO)
+print foo.attr
+print FOO.attr
+
+print FOO.__dict__['demo'] # &lt;function demo at 0x02F67B30&gt;
+print FOO.demo # &lt;unbound method FOO.demo&gt;
+print foo.demo # &lt;bound method FOO.demo of &lt;__main__.FOO object at 0x02F69E30&gt;&gt;
+
+print FOO.__dict__['demo'].__get__(None, FOO) == FOO.demo #True
+print type(foo).__dict__['demo'].__get__(foo, type(foo)) == foo.demo # #True
+</code></pre>
+<pre><code class="python language-python">def __getattribute__(self, key):
+    # self是一个类
+    if type(type) == type(self):
+        pass
+        # 和实例类似，区别1，但是没有__getattr__2，针对非数据描述符的处理方式是不同的。（unbound method）
+    # self是一个实例
+    else:
+        # 数据型描述符
+        _attr = type(self).__dict__.get(key)
+        if _attr and hasattr(_attr, '__get__') and hasattr(_attr, '__set__'):
+            _value = type(self).__dict__[key]
+            if hasattr(_value, '__get__'):
+                return _value.__get__(self, type(self))
+            return _value
+        del _attr
+        # 实例属性
+        _attr = self.__dict__.get(key)
+        if _attr:
+            return _attr
+        del _attr
+        # 非数据描述符
+        _attr = type(self).__dict__.get(key)
+        if _attr and hasattr(_attr, '__get__'):
+            _value = type(self).__dict__[key]
+            if hasattr(_value, '__get__'):
+                return _value.__get__(self, type(self))
+            return _value
+        del _attr
+        # 类属性
+        _attr = type(self).__dict__.get(key)
+        if _attr:
+            return _attr
+        # 父类属性
+        for FClass in self.__class__.__mro__:
+            _attr = FClass.__dict__.get(key)
+            if _attr:
+                return _attr
+        # __getattr__
+        if hasattr(self, '__getattr__'):
+            return self.__getattr__(key)
+        else:
+            raise AttributeError('type object "{1}" has no attribute "{2}"'.format(str(self.__class__), key))
+</code></pre>
+</section>
+
+    
+  </article>
+  
+    
+<style>
+  .article-actions {
+    max-inline-size: var(--content-max-width);
+
+    display: flex;
+    align-items: center;
+
+    margin-block: 40px;
+    margin-inline: auto;
+    padding-inline: 30px;
+
+    font-family: common_font;
+    color: var(--normal-color);
+  }
+
+  .article-actions_action:not(:last-child)::after {
+    content: '·\00a0';
+  }
+
+  .article-actions_action > a {
+    color: inherit;
+    text-decoration-color: var(--primary-color);
+  }
+
+  @media (max-width: 520px) {
+    .article-actions {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .article-actions_action::before {
+      content: '·';
+    }
+
+    .article-actions_action:not(:last-child)::after {
+      content: '';
+    }
+  }
+</style>
+
+<div class="article-actions">
+  <span class="article-actions_action">
+    使用 <a href="https://github.com/chaleaoch/animal-photosynthesis/discussions">Discussions</a> 讨论
+  </span>
+  <span class="article-actions_action">
+    在 <a href="https://github.com/chaleaoch/animal-photosynthesis/edit/master/articles/python对属性的搜索优先级/index.md">Github</a> 上编辑
+  </span>
+  <span class="article-actions_action">
+    分享到 <a href="https://www.twitter.com/share?text=python%E5%AF%B9%E5%B1%9E%E6%80%A7%E7%9A%84%E6%90%9C%E7%B4%A2%E4%BC%98%E5%85%88%E7%BA%A7&amp;url=https%3A%2F%2Fchaleaoch.com%2Fpython%E5%AF%B9%E5%B1%9E%E6%80%A7%E7%9A%84%E6%90%9C%E7%B4%A2%E4%BC%98%E5%85%88%E7%BA%A7">Twitter</a>
+  </span>
+</div>
+
+  
+  <!-- <script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8404651063516637"
+  crossorigin="anonymous"
+></script>
+<style>
+  .adsbygoogle {
+    max-width: 100%;
+    margin-block: 40px;
+    overflow: hidden;
+    text-align: center;
+  }
+
+  .adsbygoogle:empty {
+    display: none;
+  }
+</style>
+<ins
+  class="adsbygoogle"
+  style="display:block"
+  data-ad-client="ca-pub-8404651063516637"
+  data-ad-slot="7746538242"
+  data-ad-format="auto"
+  data-full-width-responsive="true"
+></ins>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+ -->
+  <style>
+.page-footer {
+  font-size: 12px;
+  max-inline-size: var(--content-max-width);
+  margin-block: 40px;
+  margin-inline: auto;
+  padding-inline: 30px;
+  font-family: common_font;
+  color: var(--secondary-color);
+}
+
+.page-footer > a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.page-footer > a:hover {
+  color: var(--primary-color);
+}
+
+.page-footer > .underline {
+  text-decoration: underline;
+}
+</style>
+
+<footer class="page-footer">
+  <a href="https://github.com/chaleaoch/animal-photosynthesis/blob/master/license">©</a>
+  2024
+  &nbsp;
+  <!-- <a class="underline" href="https://i.mebtte.com">MEBTTE</a> -->
+  <!-- &nbsp;|&nbsp; -->
+  <!-- <a class="underline" href="https://stats.uptimerobot.com/4nO5RUYB60">UPTIME</a>
+  &nbsp;|&nbsp; -->
+  <!-- <a class="underline" href="/support">支持我</a> -->
+</footer>
+
+  <script src="/39c97c2884c3a2b5e64c8f085b843d4e.js"></script>
+  <script src="/0ec215ad131a36856d3d20423b9aca26.js" async="" defer=""></script>
+
+
+
+</body></html>

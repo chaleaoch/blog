@@ -1,0 +1,646 @@
+<!DOCTYPE html><html lang="zh-cn"><head>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="chaleaoch">
+<meta name="keywords" content="HTML, CSS, JavaScript, Web, Front-End">
+
+<!-- Google Analytics -->
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-CESZTRKM96"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-CESZTRKM96');
+</script>
+
+<!-- open graph -->
+<meta property="og:type" content="website">
+<meta property="og:image" content="/6ed5faa0573b2a5a9d47232c9a71fb88.png">
+
+<link rel="shortcut icon" type="image/png" href="/6ed5faa0573b2a5a9d47232c9a71fb88.png">
+<link rel="sitemap" type="application/xml" href="/sitemap.xml">
+
+<link rel="preload" href="/1acfd736cd99e3dea4bc1ded904b2589.ttf" as="font" crossorigin="anonymous">
+<link rel="preload" href="/80ff3b2d122ff544e38b3f4633c7976a.ttf" as="font" crossorigin="anonymous">
+
+  <style>
+  @font-face {
+    font-family: common_font;
+    src: url(/80ff3b2d122ff544e38b3f4633c7976a.ttf);
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    --content-max-width: 840px;
+
+    --primary-color: rgb(237 106 94);
+
+    --normal-color: #333;
+    --secondary-color: #888;
+    --tertiary-color: #ddd;
+    --backgroud: rgb(255 255 255);
+
+    --border-radius: 2px;
+    --transition-duration: 0.3s;
+
+    background-color: var(--backgroud);
+    transition: background-color var(--transition-duration);
+  }
+
+  figure {
+    margin-inline: 0;
+  }
+</style>
+
+
+  <title>future对象 - 志超说</title>
+  <meta name="description" content="<p style=&quot;color: rgba(127, 127, 127, 0.9);&quot;>Future对象其实在平时的工作中使用的并不是很多, 最近在研究fastapi以及底层的asyncio, 里面遇到了future对象和task对象, 仔细看看.<p>  在python中, future可以指两个......">
+  <meta property="og:description" content="<p style=&quot;color: rgba(127, 127, 127, 0.9);&quot;>Future对象其实在平时的工作中使用的并不是很多, 最近在研究fastapi以及底层的asyncio, 里面遇到了future对象和task对象, 仔细看看.<p>  在python中, future可以指两个......">
+
+  <link rel="preload" href="/fd258abfa4640161d9f4b394d1232620.ttf" as="font" crossorigin="anonymous">
+  <style>
+    @font-face {
+      font-family: article_font_future对象;
+      src: url(/fd258abfa4640161d9f4b394d1232620.ttf);
+    }
+    article {
+      font-family: article_font_future对象;
+    }
+  </style>
+  
+  <link rel="stylesheet" href="/ece570de77ba673c17121d06fc929bd9.css">
+</head>
+
+<body>
+  <style>
+  @font-face {
+    font-family: title_font;
+    src: url(/1acfd736cd99e3dea4bc1ded904b2589.ttf);
+  }
+
+  .page-header {
+    max-inline-size: var(--content-max-width);
+    margin-block: 50px 40px;
+    margin-inline: auto;
+    padding-inline: 30px;
+    display: flex;
+    align-items: center;
+  }
+
+  .page-header_title {
+    flex: 1;
+    min-inline-size: 0;
+    font-size: min(8vw, 56px);
+    font-family: title_font;
+    margin: 0;
+    color: var(--normal-color);
+  }
+
+  .page-header_title > a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .page-header_icon {
+    margin-inline-start: 10px;
+  }
+
+  .page-header_icon > img {
+    user-select: none;
+    inline-size: 20px;
+    block-size: 20px;
+  }
+</style>
+
+<header class="page-header">
+  
+    <h2 class="page-header_title">
+      <a href="/">志超说</a>
+    </h2>
+  
+  <a class="page-header_icon" href="/rss.xml" target="_blank">
+    <img src="/e31ad23031e5bcb34e8d4a424ba0c100.png" alt="rss">
+  </a>
+  <a class="page-header_icon" href="https://github.com/chaleaoch/animal-photosynthesis" target="_blank">
+    <img src="/184c800e11079b13904f308161071b62.png" alt="github">
+  </a>
+  <!-- <a class="page-header_icon" href="//i.mebtte.com" target="_blank">
+    <img src="/author.png" alt="author" />
+  </a> -->
+</header>
+
+  <article>
+    <style>
+.article-header {
+  max-inline-size: var(--content-max-width);
+  margin-block: 40px;
+  margin-inline: auto;
+  padding-inline: 30px;
+}
+
+.article-title {
+  color: var(--primary-color);
+  font-size: 32px;
+  margin: 0;
+  padding: 0;
+  line-height: 1.5;
+}
+
+.article-title a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.article-publish-time {
+  color: var(--secondary-color);
+  font-size: 14px;
+  font-family: common_font;
+}
+</style>
+
+<section class="article-header">
+  <h1 class="article-title">
+    <a href="/future对象">future对象</a>
+  </h1>
+  <time class="article-publish-time">2024-05-13</time>
+</section>
+
+    <style>
+  article {
+    --article-space: 30px;
+  }
+
+  article a {
+    color: var(--normal-color);
+    text-decoration-color: var(--primary-color);
+  }
+
+  article h2, article h3, article h4, article h5, article h6 {
+    max-inline-size: var(--content-max-width);
+    padding-inline: 30px;
+    margin-inline: auto;
+    line-height: 1.5;
+    color: var(--normal-color);
+  }
+
+  article h2 {
+    margin-block-start: 28px;
+    font-size: 28px;
+  }
+
+  article h3 {
+    margin-block-start: 26px;
+    font-size: 25px;
+  }
+
+  article h4 {
+    margin-block-start: 24px;
+    font-size: 22px;
+  }
+
+  article h5 {
+    margin-block-start: 22px;
+    font-size: 19px;
+  }
+
+  article h6 {
+    margin-block-start: 20px;
+    font-size: 16px;
+  }
+
+  article p {
+    max-inline-size: var(--content-max-width);
+
+    margin-block: 15px;
+    margin-inline: auto;
+    padding-inline: 30px;
+
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--normal-color);
+    word-break: break-word;
+  }
+
+  article p code, article ul code, article ol code, article table code {
+    padding-inline: 4px;
+    border-radius: var(--border-radius);
+    background: rgba(237, 106, 94, 0.3);
+  }
+
+  article pre {
+    max-inline-size: var(--content-max-width) !important;
+    margin-block: 15px !important;
+    margin-inline: auto !important;
+    font-size: 14px !important;
+    box-sizing: border-box;
+    border-radius: var(--border-radius) !important;
+    tab-size: 2 !important;
+    padding: 0 !important;
+  }
+
+  article pre code {
+    display: block;
+    margin-block: 20px !important;
+    margin-inline: 30px !important;
+    overflow: auto !important;
+    font-size: inherit !important;
+  }
+
+  article hr {
+    max-inline-size: var(--content-max-width);
+    margin-block: 40px;
+    margin-inline: auto;
+    padding-inline: var(--article-space);
+    border: none;
+  }
+
+  article hr::after{
+    content: '';
+    display: block;
+    block-size: 1px;
+    background-color:var(--tertiary-color);
+  }
+
+  article blockquote {
+    max-inline-size: var(--content-max-width);
+    padding-inline: var(--article-space);
+    margin-block: 15px;
+    margin-inline: auto;
+    position: relative;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--secondary-color);
+  }
+
+  .table-container {
+    max-inline-size: var(--content-max-width);
+    padding-inline: 30px;
+    margin-block: 15px;
+    margin-inline: auto;
+  }
+
+  .table-container table {
+    border-collapse: collapse;
+  }
+
+  .table-container th, .table-container td {
+    font-size: 14px;
+    color: var(--normal-color);
+    border: 1px solid var(--tertiary-color);
+    padding: 10px;
+    text-align: left;
+  }
+
+  .table-container th {
+    font-size: 16px;
+    text-align: left;
+  }
+
+  article blockquote::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 30px;
+    inline-size: 3px;
+    block-size: 100%;
+    background-color: var(--primary-color);
+  }
+
+  article blockquote p {
+    font-size: 16px;
+    color: inherit;
+    max-inline-size: unset;
+    padding: 0;
+    margin-inline-start: 30px;
+  }
+
+  article ul,
+  article ol {
+    max-inline-size: var(--content-max-width);
+    padding-inline: 30px;
+    margin-block: 15px;
+    margin-inline: auto;
+    color: var(--normal-color);
+    line-height: 1.5;
+  }
+
+  article ol {
+    counter-reset: li-count;
+  }
+  
+  article ul li, article ol li {
+    display: block;
+    margin-block: 5px;
+    position: relative;
+  }
+
+  article ol li {
+    counter-increment: li-count;
+  }
+
+  article ul li::before {
+    content: '';
+    display: inline-block;
+    inline-size: 6px;
+    block-size: 6px;
+
+    margin-inline-end: 10px;
+
+    vertical-align: middle;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+  }
+
+  article ol li::before {
+    content: counter( li-count) '. ';
+    color: var(--primary-color);
+  }
+
+  article figcaption {
+    font-size: 12px;
+    color: var(--secondary-color);
+    text-align: center;
+    margin-block-start: 5px;
+  }
+
+  .figure-img {
+    max-inline-size: var(--content-max-width);
+    padding-inline: 30px;
+    margin-block: 15px;
+    margin-inline: auto;
+  }
+
+  .figure-img img {
+    display: block;
+    max-inline-size: 100%;
+    margin-inline: auto;
+    border-radius: var(--border-radius);
+  }
+  
+  .figure-video {
+    max-inline-size: var(--content-max-width);
+    padding-inline: 30px;
+    margin-block: 15px;
+    margin-inline: auto;
+  }
+
+  .figure-video video {
+    display: block;
+    max-inline-size: 100%;
+    margin-inline: auto;
+  }
+
+  .figure-iframe {
+    inline-size: 100%;
+    margin-block: 15px;
+  }
+
+  .figure-iframe iframe {
+    display: block;
+    inline-size: 100%;
+    max-inline-size: var(--content-max-width);
+    margin-inline: auto;
+    block-size: 640px;
+    border: 1px solid var(--tertiary-color);
+    border-radius: var(--border-radius);
+  }
+
+  strong {
+    font-weight: normal;
+    text-decoration: underline;
+  }
+</style>
+
+<section>
+  <p></p><p style="color: rgba(127, 127, 127, 0.9);">Future对象其实在平时的工作中使用的并不是很多, 最近在研究fastapi以及底层的asyncio, 里面遇到了future对象和task对象, 仔细看看.</p><p></p>
+<p>在python中, future可以指两个对象, 一个是<a href="https://docs.python.org/zh-cn/3/library/concurrent.futures.html">concurrent.futures.Future</a>, 一个是<a href="https://docs.python.org/zh-cn/3/library/asyncio-future.html#asyncio.Future">asyncio.Future</a>. 两者的api差别不大. 本文主要介绍前者.</p>
+<p>future对象主要用于在同步环境下实现异步操作. 举个例子</p>
+<pre><code class="python language-python">import time
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
+
+
+def task(n):
+    print(f"task:{datetime.now()}")
+    return n * n
+
+
+def non_blocking_run(func, *args):
+    executor = ThreadPoolExecutor(max_workers=3)
+    future = executor.submit(func, *args)
+    executor.shutdown(wait=False)
+    return future
+
+
+f = non_blocking_run(task, 3)
+f.add_done_callback(lambda future: print(future.result()))  # 异步回调 9
+time.sleep(3)  # do something business logic
+print(f"main:{datetime.now()}")
+print(f.result())  # 9
+</code></pre>
+<h2 id="executor">Executor</h2>
+<p>一个抽象类, 实现类(ThreadPoolExecutor)可以参考上面的例子, 更常见的写法是使用with上下文管理自动的shutdown, 例子参考最下面<code>as_completed</code>的例子.</p>
+<h2 id="future">Future</h2>
+<p>由<code>Executor.submit()</code> 返回</p>
+<p>主要方法:
+<code>result(timeout=None)</code> 阻塞直到结果返回, 或者超时, 如有异常, 正常触发.<br>
+<code>exception(timeout=None)</code> 阻塞直到结果返回, 或者超时, 如有异常, 返回异常对象, 否则, 返回None<br>
+<code>cancel()</code> 尝试取消任务, 如果任务已经开始, 则返回False, 否则返回True  </p>
+<h2 id="">函数</h2>
+<p><code>wait(fs, timeout=None, return_when=ALL_COMPLETED)</code></p>
+
+      <figure class="figure-img">
+        <a href="/5b820ae01388bc59ae772e1b935eedf5.png" target="_blank">
+          <img src="/5b820ae01388bc59ae772e1b935eedf5.png" alt="alt text" title="alt text" loading="lazy">
+        </a>
+        <figcaption>alt text</figcaption>
+      </figure>
+    
+<pre><code class="python language-python">import concurrent.futures
+import random
+import time
+
+
+def task(x):
+    time.sleep(random.random())
+    return x * x
+
+
+with concurrent.futures.ThreadPoolExecutor() as executor:
+    futures = []
+    for i in range(10):
+        future = executor.submit(task, i)
+        futures.append(future)
+
+    done, not_done = concurrent.futures.wait(futures, timeout=0.5)
+    print(f"done:{len(done)}")  # done:6
+    print(f"not_done:{len(not_done)}")  # not_done:4
+
+    for future in done:
+        print(future.result())  # 81 36 9 0 49 4
+</code></pre>
+<p><code>concurrent.futures.as_completed(fs, timeout=None)</code></p>
+<p>返回一个迭代器, 迭代器中的元素都是运行完的future对象, 下面是官网给的一个例子.
+其中with可以理解为一种快捷方式. 自动调用<code>executor.shutdown</code></p>
+<pre><code class="python language-python">import concurrent.futures
+import urllib.request
+
+URLS = ['http://www.foxnews.com/',
+        'http://www.cnn.com/',
+        'http://europe.wsj.com/',
+        'http://www.bbc.co.uk/',
+        'http://nonexistant-subdomain.python.org/']
+
+# Retrieve a single page and report the URL and contents
+def load_url(url, timeout):
+    with urllib.request.urlopen(url, timeout=timeout) as conn:
+        return conn.read()
+
+# We can use a with statement to ensure threads are cleaned up promptly
+with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+    # Start the load operations and mark each future with its URL
+    future_to_url = {executor.submit(load_url, url, 60): url for url in URLS}
+    for future in concurrent.futures.as_completed(future_to_url):
+        url = future_to_url[future]
+        try:
+            data = future.result()
+        except Exception as exc:
+            print('%r generated an exception: %s' % (url, exc))
+        else:
+            print('%r page is %d bytes' % (url, len(data)))
+</code></pre>
+<p>全文完.</p>
+</section>
+
+    
+  </article>
+  
+    
+<style>
+  .article-actions {
+    max-inline-size: var(--content-max-width);
+
+    display: flex;
+    align-items: center;
+
+    margin-block: 40px;
+    margin-inline: auto;
+    padding-inline: 30px;
+
+    font-family: common_font;
+    color: var(--normal-color);
+  }
+
+  .article-actions_action:not(:last-child)::after {
+    content: '·\00a0';
+  }
+
+  .article-actions_action > a {
+    color: inherit;
+    text-decoration-color: var(--primary-color);
+  }
+
+  @media (max-width: 520px) {
+    .article-actions {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .article-actions_action::before {
+      content: '·';
+    }
+
+    .article-actions_action:not(:last-child)::after {
+      content: '';
+    }
+  }
+</style>
+
+<div class="article-actions">
+  <span class="article-actions_action">
+    使用 <a href="https://github.com/chaleaoch/animal-photosynthesis/discussions">Discussions</a> 讨论
+  </span>
+  <span class="article-actions_action">
+    在 <a href="https://github.com/chaleaoch/animal-photosynthesis/edit/master/articles/future对象/index.md">Github</a> 上编辑
+  </span>
+  <span class="article-actions_action">
+    分享到 <a href="https://www.twitter.com/share?text=future%E5%AF%B9%E8%B1%A1&amp;url=https%3A%2F%2Fchaleaoch.com%2Ffuture%E5%AF%B9%E8%B1%A1">Twitter</a>
+  </span>
+</div>
+
+  
+  <!-- <script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8404651063516637"
+  crossorigin="anonymous"
+></script>
+<style>
+  .adsbygoogle {
+    max-width: 100%;
+    margin-block: 40px;
+    overflow: hidden;
+    text-align: center;
+  }
+
+  .adsbygoogle:empty {
+    display: none;
+  }
+</style>
+<ins
+  class="adsbygoogle"
+  style="display:block"
+  data-ad-client="ca-pub-8404651063516637"
+  data-ad-slot="7746538242"
+  data-ad-format="auto"
+  data-full-width-responsive="true"
+></ins>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+ -->
+  <style>
+.page-footer {
+  font-size: 12px;
+  max-inline-size: var(--content-max-width);
+  margin-block: 40px;
+  margin-inline: auto;
+  padding-inline: 30px;
+  font-family: common_font;
+  color: var(--secondary-color);
+}
+
+.page-footer > a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.page-footer > a:hover {
+  color: var(--primary-color);
+}
+
+.page-footer > .underline {
+  text-decoration: underline;
+}
+</style>
+
+<footer class="page-footer">
+  <a href="https://github.com/chaleaoch/animal-photosynthesis/blob/master/license">©</a>
+  2024
+  &nbsp;
+  <!-- <a class="underline" href="https://i.mebtte.com">MEBTTE</a> -->
+  <!-- &nbsp;|&nbsp; -->
+  <!-- <a class="underline" href="https://stats.uptimerobot.com/4nO5RUYB60">UPTIME</a>
+  &nbsp;|&nbsp; -->
+  <!-- <a class="underline" href="/support">支持我</a> -->
+</footer>
+
+  <script src="/39c97c2884c3a2b5e64c8f085b843d4e.js"></script>
+  <script src="/0ec215ad131a36856d3d20423b9aca26.js" async="" defer=""></script>
+
+
+
+</body></html>
