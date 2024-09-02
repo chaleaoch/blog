@@ -6,14 +6,13 @@ hidden: false
 
 <p style="color: rgba(127, 127, 127, 0.9);">网上搜了一圈没有介绍静态IP安装的.我来记一笔吧.<p>
 
-![alt text](./index/attachments/image.png)
-
-![alt text](./index/attachments/image-1.png)
-这里我选的minimized方式安装
-![alt text](./index/attachments/image-2.png)
-选Edit IPv4
-![alt text](./index/attachments/image-24.png)
-![alt text](./index/attachments/image-23.png)
+![alt text](./index/attachments/image.png)  
+![alt text](./index/attachments/image-1.png)  
+这里我选的minimized方式安装  
+![alt text](./index/attachments/image-2.png)  
+选Edit IPv4  
+![alt text](./index/attachments/image-24.png)  
+![alt text](./index/attachments/image-23.png)  
 静态IP配置  
     1. Subnet, 如果你的网关是 `192.168.32.1/24` 这里填: `192.168.32.0/24`  
     如果你的网关是如果你的网关是 `192.168.32.1/16` 这里填: `192.168.0.0/16`  
@@ -21,17 +20,17 @@ hidden: false
     2. Address, 就是你的IP  
     3. Gateway, 这里填`192.168.32.1`, 没有`/24`  
     4. Nameservers和Search domains, 和DNS有关, 可填可不填.  
-![alt text](./index/attachments/image-21.png)
-![alt text](./index/attachments/image-22.png)
-![alt text](./index/attachments/image-8.png)
-选Custom storage layout
-![alt text](./index/attachments/image-9.png)
-![alt text](./index/attachments/image-10.png)
-这里说法很多, 我选择了最简单的那种.
-![alt text](./index/attachments/image-3.png)
-![alt text](./index/attachments/image-12.png)
-![alt text](./index/attachments/image-13.png)
-![alt text](./index/attachments/image-14.png)
-![alt text](./index/attachments/image-15.png)
-![alt text](./index/attachments/image-16.png)
-![alt text](./index/attachments/image-17.png)
+![alt text](./index/attachments/image-21.png)  
+![alt text](./index/attachments/image-22.png)  
+![alt text](./index/attachments/image-8.png)  
+选Custom storage layout  
+![alt text](./index/attachments/image-9.png)  
+![alt text](./index/attachments/image-10.png)  
+这里说法很多, 我选择了最简单的那种.  
+![alt text](./index/attachments/image-3.png)  
+![alt text](./index/attachments/image-12.png)  
+![alt text](./index/attachments/image-13.png)  
+![alt text](./index/attachments/image-14.png)  
+![alt text](./index/attachments/image-15.png)  
+![alt text](./index/attachments/image-16.png)  
+![alt text](./index/attachments/image-17.png)  
