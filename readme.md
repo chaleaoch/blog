@@ -1,14 +1,16 @@
 # 动物的光合作用
 
-- [一个不带插件的flask应用4 -- flask-filter](https://chaleaoch.com/一个不带插件的flask应用4 -- flask-filter) <sup><sub>2024-06-04</sub></sup>
+- [Ubuntu Serviver24.04安装小记](<https://chaleaoch.com/ubuntu> serviver24.04安装小记) <sup><sub>2024-09-02</sub></sup>
+- [cors扫盲](https://chaleaoch.com/cors扫盲) <sup><sub>2024-08-20</sub></sup>
+- [一个不带插件的flask应用4 -- flask-filter](<https://chaleaoch.com/一个不带插件的flask应用4> -- flask-filter) <sup><sub>2024-06-04</sub></sup>
 - [future对象](https://chaleaoch.com/future对象) <sup><sub>2024-05-13</sub></sup>
 - [apscheduler小剖](https://chaleaoch.com/apscheduler源码小剖) <sup><sub>2024-05-04</sub></sup>
 - [wsgi介绍](https://chaleaoch.com/wsgi介绍) <sup><sub>2024-04-29</sub></sup>
-- [一个不带插件的flask应用3 -- app依赖反转](https://chaleaoch.com/一个不带插件的flask应用3 -- app依赖反转) <sup><sub>2024-04-08</sub></sup>
+- [一个不带插件的flask应用3 -- app依赖反转](<https://chaleaoch.com/一个不带插件的flask应用3> -- app依赖反转) <sup><sub>2024-04-08</sub></sup>
 - [Go包的可见性](https://chaleaoch.com/go包的可见性) <sup><sub>2024-01-29</sub></sup>
 - [Go代码断行规则](https://chaleaoch.com/Go代码断行规则) <sup><sub>2024-01-15</sub></sup>
 - [Go切片注意事项](https://chaleaoch.com/go切片注意事项) <sup><sub>2024-01-12</sub></sup>
-- [一个不带插件的flask应用2 -- 自定义migrate](https://chaleaoch.com/一个不带插件的flask应用2 -- 自定义migrate) <sup><sub>2023-08-15</sub></sup>
+- [一个不带插件的flask应用2 -- 自定义migrate](<https://chaleaoch.com/一个不带插件的flask应用2> -- 自定义migrate) <sup><sub>2023-08-15</sub></sup>
 - [一个不带插件的flask应用](https://chaleaoch.com/一个不带插件的flask应用) <sup><sub>2023-08-14</sub></sup>
 - [python对属性的搜索优先级](https://chaleaoch.com/python对属性的搜索优先级) <sup><sub>2023-07-28</sub></sup>
 - [archlinux安装xrdp踩坑记](https://chaleaoch.com/archlinux安装xrdp踩坑记) <sup><sub>2023-06-07</sub></sup>
