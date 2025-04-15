@@ -19,12 +19,15 @@ project/
 ## 支持包的相对导入
 
 `python -m project.script` 相当于将script看做一个模块, project 看做一个包.
+
 `python ./project/script.py` 相当于将script看做一个脚本, project 什么也不是, 看不到更上层路径/包
 
 ## 模块搜索路径 (sys.path) 不同
 
 `python ./project/script.py`
+
 `sys.path[0]` 是脚本所在目录的绝对路径.
 
 `python -m project.script`
+
 `sys.path[0]` 是执行命令的目录 == `pwd`
