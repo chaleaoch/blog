@@ -5,16 +5,16 @@ updates:
 hidden: false
 ---
 
-<p style="color: rgba(127, 127, 127, 0.9);">最近在工作中遇到一个bug, 需要调查一下peewee的数据库连接情况, 简单记录一下, 过几天又忘了<p>
+<p style="color: rgba(127, 127, 127, 0.9);">最近在工作中遇到一个 bug, 需要调查一下 peewee 的数据库连接实现, 这里简单记录一下分析过程, 方便日后查阅.</p>
 
-版本:  
+版本信息:
 
 ```
 peewee == 3.17.6
 psycopg2 == 2.9.9   
 ```
 
-Model.py:  
+Model.py 示例:
 
 ```python
 db = peewee.PostgresqlDatabase(
@@ -31,23 +31,23 @@ class AModel(peewee.Model):
         database = db
 ```
 
-入口是 `list(AModel.select())`, 让我们来看看peewee是如何利用pg的cursor来查询数据的.
+入口是 `list(AModel.select())`, 让我们来看看 peewee 是如何利用 pg 的 cursor 查询数据的.
 
-## AModel的父类(`peewee.Model`)的元类(`ModelBase`)会加载`db`对象
+## AModel 的父类 (`peewee.Model`) 的元类 (`ModelBase`) 会加载 `db` 对象
 
-按照顺序执行
+执行顺序如下:
 
 ```python
 class AModel(peewee.Model):
-# AModel的父类peewee.Model --> peewee.py 6645`
-class Model(with_metaclass(ModelBase, Node)): 
-# peewee.Model的元类ModelBase.__new__ --> peewee.py 6547
+# AModel 的父类 peewee.Model --> peewee.py 6645
+class Model(with_metaclass(ModelBase, Node)):
+# peewee.Model 的元类 ModelBase.__new__ --> peewee.py 6547
 cls._meta = Meta(cls, **meta_options)
 ```
 
-这里的cls就是`AModel`, 至于`Meta`是啥不重要, 重要的是`meta_options`, 它是一个字典结构, 包含上面例子中的`database = db`, 也就是说, `cls._meta.database == db` 这里是关键, 后面要考.
+这里的 `cls` 就是 `AModel`, `Meta` 具体内容暂且不表, 关键在于 `meta_options`, 它是一个字典结构, 包含了上面例子中的 `database = db`. 也就是说, `cls._meta.database == db`, 这是后续的关键.
 
-## `AModel.select()`会返回一个`ModelSelect`对象
+## `AModel.select()` 会返回一个 `ModelSelect` 对象
 
 ```python
 class ModelSelect(BaseModelSelect, Select): # peewee.py 7339
@@ -59,38 +59,37 @@ class ModelSelect(BaseModelSelect, Select): # peewee.py 7339
         super(ModelSelect, self).__init__([model], fields)
 ```
 
-当`list(AModel.select())`的时候, `ModelSelect`对象对象的`__iter__`方法会被调用, 这个方法会调用`self.execute()`来执行查询.
+当执行 `list(AModel.select())` 时, 会调用 `ModelSelect` 对象的 `__iter__` 方法, 该方法内部会调用 `self.execute()` 来执行查询:
 
 ```python
-def __iter__(self): #peewee.py 7273 # self 是 ModelSelect对象
+def __iter__(self): # peewee.py 7273, self 是 ModelSelect 对象
     if not self._cursor_wrapper:
         self.execute()
     return iter(self._cursor_wrapper)
 ```
 
-这里调用方没有传参, 但是因为装饰器`database_required`的原因, 将database的参数传递给了`execute`方法.
+虽然调用方没有传参, 但由于装饰器 `database_required` 的作用, `database` 参数会自动传递给 `execute` 方法.
 
 ```python
 @database_required # peewee.py 2105
-def execute(self, database): # self 是 ModelSelect对象
+def execute(self, database): # self 是 ModelSelect 对象
     return self._execute(database)
 # ...
 def database_required(method): # peewee.py 2029
     @wraps(method)
-    def inner(self, database=None, *args, **kwargs): # self 是 ModelSelect对象
+    def inner(self, database=None, *args, **kwargs): # self 是 ModelSelect 对象
         database = self._database if database is None else database # 这里传递进去的
         if not database:
             raise InterfaceError('Query must be bound to a database in order '
                                  'to call "%s".' % method.__name__)
         return method(self, database, *args, **kwargs) # 这个 method 就是 self.execute()
     return inner
-
 ```
 
-最后, 还剩下一个问题, `self._database`是如何被赋值的?
+那么, `self._database` 是如何被赋值的?
 
 ```python
-class _ModelQueryHelper(object): # 这个类是ModelSelect的父类
+class _ModelQueryHelper(object): # 这个类是 ModelSelect 的父类
     default_row_type = ROW.MODEL
 
     def __init__(self, *args, **kwargs):
@@ -99,10 +98,10 @@ class _ModelQueryHelper(object): # 这个类是ModelSelect的父类
             self._database = self.model._meta.database # peewee.py 7212
 ```
 
-如果前面的内容你都跟上了, 就可以推导出:
-`self.model._meta.database` 就是之前的`db`, 也就是`AModel`的`Meta`类中的`database = db`
+结合前面的内容可以推导出:
+`self.model._meta.database` 就是之前的 `db`, 也就是 `AModel` 的 `Meta` 类中的 `database = db`.
 
-整理一下, 前面的代码执行顺序:
+整理一下, 代码的执行顺序如下:
 
 ```python
 AModel.select() # 返回 ModelSelect 对象
@@ -113,16 +112,16 @@ self.execute() # 进入 ModelSelect 的 execute 方法
 self._execute(database) # 进入 ModelSelect 的 _execute 方法
 ```
 
-## 将"权杖"移交给database
+## 将"执行权杖"移交给 database
 
 ```python
 def _execute(self, database): # peewee.py 2278
     if self._cursor_wrapper is None:
-        cursor = database.execute(self) # 这里的database就是之前的db, 由此进入database时间.
+        cursor = database.execute(self) # 这里的 database 就是之前的 db, 由此进入 database 的流程.
         self._cursor_wrapper = self._get_cursor_wrapper(cursor)
     return self._cursor_wrapper
 ```
 
-`database.execute(self)` 都做了什么, 明天再说吧.
+`database.execute(self)` 具体做了什么, 明天再继续分析.
 
 <完>
