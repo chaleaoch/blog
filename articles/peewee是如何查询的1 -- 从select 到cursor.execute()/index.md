@@ -122,6 +122,6 @@ def _execute(self, database): # peewee.py 2278
     return self._cursor_wrapper
 ```
 
-`database.execute(self)` 具体做了什么, 明天再继续分析.
+`database.execute(self)` 具体做了什么, 明天再继续分析. :snowflake:
 
 <完>
