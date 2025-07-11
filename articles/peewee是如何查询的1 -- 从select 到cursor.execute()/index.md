@@ -25,12 +25,18 @@ class AModel(peewee.Model):
 
 入口是 `list(AModel.select())`, 让我们来看看peewee是如何利用pg的cursor来查询数据的.
 
-## AModel的父类`peewee.Model`的元类`ModelBase`会加载Meta类
+## AModel的父类(`peewee.Model`)的元类(`ModelBase`)会加载Meta类
 
-1. `class RegionModel(peewee.Model):`
-2. `class Model(with_metaclass(ModelBase, Node)): # peewee.py 6645`
-3. `cls._meta = Meta(cls, **meta_options) # peewee.py 6547`
-这里的cls就是`AModel`, 至于`Meta`是啥不重要, 重要的是`meta_options`, 它是一个字典结构, 上面例子中的`database = db`, 也就是说, `cls._meta.database == db`
+按照顺序执行
+
+```python
+class AModel(peewee.Model):
+# AModel的父类peewee.Model --> peewee.py 6645`
+class Model(with_metaclass(ModelBase, Node)): 
+# peewee.Model的元类ModelBase.__new__ --> peewee.py 6547
+cls._meta = Meta(cls, **meta_options)
+# 这里的cls就是`AModel`, 至于`Meta`是啥不重要, 重要的是`meta_options`, 它是一个字典结构, 包含上面例子中的`database = db`, 也就是说, `cls._meta.database == db` 这里是关键, 后面要考.
+```
 
 ## `AModel.select()`会返回一个`ModelSelect`对象
 
