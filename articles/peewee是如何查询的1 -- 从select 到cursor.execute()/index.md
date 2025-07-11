@@ -1,5 +1,5 @@
 ---
-title: "peewee是如何查询的1 -- 从select 到cursor.execute()"
+title: "peewee是如何查询的1 -- 从select 到database.execute()"
 publish_time: "2025-07-11"
 updates:
 hidden: false
