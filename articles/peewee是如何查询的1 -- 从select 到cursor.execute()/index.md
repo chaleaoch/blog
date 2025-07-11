@@ -17,6 +17,14 @@ psycopg2 == 2.9.9
 Model.py:  
 
 ```python
+db = peewee.PostgresqlDatabase(
+    database=DB_DATABASE,
+    user=DB_USER,
+    password=DB_PASSWORD,
+    host=DB_HOST,
+    port=DB_PORT,
+)
+
 class AModel(peewee.Model):
     ... # 省略其他字段
     class Meta:
@@ -25,7 +33,7 @@ class AModel(peewee.Model):
 
 入口是 `list(AModel.select())`, 让我们来看看peewee是如何利用pg的cursor来查询数据的.
 
-## AModel的父类(`peewee.Model`)的元类(`ModelBase`)会加载Meta类
+## AModel的父类(`peewee.Model`)的元类(`ModelBase`)会加载`db`对象
 
 按照顺序执行
 
