@@ -1,5 +1,5 @@
 export default {
-  title: '志超说',
+  title: '阿超.log',
   description: 'chaleaoch 的个人博客.',
   origin: 'https://chaleaoch.com',
   public_path: '',
