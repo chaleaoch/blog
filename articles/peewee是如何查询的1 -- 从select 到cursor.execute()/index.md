@@ -43,8 +43,9 @@ class AModel(peewee.Model):
 class Model(with_metaclass(ModelBase, Node)): 
 # peewee.Model的元类ModelBase.__new__ --> peewee.py 6547
 cls._meta = Meta(cls, **meta_options)
-# 这里的cls就是`AModel`, 至于`Meta`是啥不重要, 重要的是`meta_options`, 它是一个字典结构, 包含上面例子中的`database = db`, 也就是说, `cls._meta.database == db` 这里是关键, 后面要考.
 ```
+
+这里的cls就是`AModel`, 至于`Meta`是啥不重要, 重要的是`meta_options`, 它是一个字典结构, 包含上面例子中的`database = db`, 也就是说, `cls._meta.database == db` 这里是关键, 后面要考.
 
 ## `AModel.select()`会返回一个`ModelSelect`对象
 
