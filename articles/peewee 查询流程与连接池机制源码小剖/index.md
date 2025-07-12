@@ -267,7 +267,7 @@ def _connect(self):
     return conn
 ```
 
-最终的基于 MySQL 解决方案是 ReconnectMixin.  
+如果是基于 MySQL 可以使用官方提供的 ReconnectMixin.  
 ReconnectMixin 重写了 execute_sql, 包裹了执行查询时的异常. 如果捕获到特定异常, 则尝试重连数据库.
 
 ```python
