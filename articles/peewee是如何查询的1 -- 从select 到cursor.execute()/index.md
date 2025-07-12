@@ -31,9 +31,11 @@ class AModel(peewee.Model):
         database = db
 ```
 
-入口是 `list(AModel.select())`, 让我们来看看 peewee 是如何利用 pg 的 cursor 查询数据的.
+入口是 `list(AModel.select())`
+让我们来看看 peewee 是如何利用 pg 的 cursor 查询数据的.
+请注意, 我们只分析查询, 不分析查询后的结果如何返回, 也就是说我们要看到 `cursor.execute(sql, params or ())` 的调用, 而不是 `cursor.fetchall()`.
 
-## AModel 的父类 (`peewee.Model`) 的元类 (`ModelBase`) 会加载 `db` 对象
+## 前置知识储备: AModel 的父类 (`peewee.Model`) 的元类 (`ModelBase`) 会加载 `db` 对象
 
 执行顺序如下:
 
@@ -101,18 +103,7 @@ class _ModelQueryHelper(object): # 这个类是 ModelSelect 的父类
 结合前面的内容可以推导出:
 `self.model._meta.database` 就是之前的 `db`, 也就是 `AModel` 的 `Meta` 类中的 `database = db`.
 
-整理一下, 代码的执行顺序如下:
-
-```python
-AModel.select() # 返回 ModelSelect 对象
-list(AModel.select()) # 调用 ModelSelect 对象的 __iter__ 方法
-# 进入 ModelSelect 的 execute 方法
-self.execute() # 进入 ModelSelect 的 execute 方法
-# 进入 ModelSelect 的 _execute 方法
-self._execute(database) # 进入 ModelSelect 的 _execute 方法
-```
-
-## 将"执行权杖"移交给 database
+将"执行权杖"移交给 database
 
 ```python
 def _execute(self, database): # peewee.py 2278
@@ -122,6 +113,15 @@ def _execute(self, database): # peewee.py 2278
     return self._cursor_wrapper
 ```
 
-`database.execute(self)` 具体做了什么, 明天再继续分析. :snowflake:
+## 总结
 
+整理一下, 代码的执行顺序如下:
+
+1. AModel.select()  返回 ModelSelect 对象
+2. list(AModel.select()) # 调用 ModelSelect 对象的 __iter__ 方法
+3. 调用ModelSelect 的 execute 方法
+4. 调用ModelSelect 的 _execute 方法
+5. 调用database.execute(self)
+
+至于`database.execute(self)` 具体做了什么, 明天再继续分析.
 <完>
