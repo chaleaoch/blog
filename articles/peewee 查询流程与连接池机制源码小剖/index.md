@@ -14,26 +14,64 @@ peewee == 3.17.6
 psycopg2 == 2.9.9   
 ```
 
-## Model.py 示例
+## 案例
 
 ```python
-db = peewee.PostgresqlDatabase(
-    database=DB_DATABASE,
-    user=DB_USER,
-    password=DB_PASSWORD,
-    host=DB_HOST,
-    port=DB_PORT,
+import time
+
+import peewee
+from playhouse.pool import PooledPostgresqlDatabase
+
+
+class ReconnectMixin:
+    def execute_sql(self, sql, params=None, commit=None):
+        try:
+            super(ReconnectMixin, self).execute_sql(sql, params)
+        except Exception as e:
+            if self.in_transaction():
+                raise e
+        if not self.is_closed():
+            self.close()
+            self.connect()
+
+        return super(ReconnectMixin, self).execute_sql(sql, params)
+
+
+class MyDb(ReconnectMixin, PooledPostgresqlDatabase):
+    pass
+
+
+db = MyDb(
+    database="db",
+    user="usr",
+    password="passwd",
+    host="localhost",
+    port=5432,
+    max_connections=20,
+    stale_timeout=300,
 )
 
+
 class AModel(peewee.Model):
-    ... # 省略其他字段
+    id = peewee.AutoField(primary_key=True)
+    name = peewee.CharField(max_length=255)
+
     class Meta:
         database = db
+
+
+while True:
+    try:
+        print(list(AModel.select()))
+        time.sleep(1)
+    except Exception as e:
+        time.sleep(1)
+        print(f"Error: {e}")
 ```
 
-入口是 `list(AModel.select())`
+入口是 `list(AModel.select())`  
 让我们来看看 peewee 是如何利用 pg 的 cursor 查询数据的.
-本文只分析查询的执行过程, 不涉及结果的返回(即只关注 `cursor.execute(sql, params or ())` 的调用, 而非 `cursor.fetchall()`).
+本文只分析查询的执行过程, 不涉及sql是如何生成的, 以及对sql执行结果的处理. 即只关注 `cursor.execute(sql, params or ())`
 
 ## 前置知识: AModel 的父类 (`peewee.Model`) 的元类 (`ModelBase`) 会加载 `db` 对象
 
@@ -100,7 +138,7 @@ class _ModelQueryHelper(object): # 这个类是 ModelSelect 的父类
             self._database = self.model._meta.database # peewee.py 7212
 ```
 
-结合前面的内容可以推导出:
+结合前面的内容可以推导出:  
 `self.model._meta.database` 就是之前的 `db`, 也就是 `AModel` 的 `Meta` 类中的 `database = db`.
 
 ### "执行权杖"的传递: 交给 `database`
@@ -183,21 +221,21 @@ def _connect(self):
 
 ### self._state
 
-self._state 是什么?
+self._state 是什么?  
 self._state 默认是一个 ThreadLocal 对象, 用于存储当前线程的数据库连接状态信息. 这里的 `self._state.conn` 就是通过 set_connection 建立的连接.
-`self._state = _ConnectionLocal()`
 
 也就是说, 这个连接状态只在当前线程有效. 如果是多线程场景, 每个线程都会建立一个新的连接.
 
-self._state.closed 在哪里赋值?
-只有手动关闭连接(db.close())时, self._state.closed 会被设置为 True.
-只有调用 self._state.set_connection 时, self._state.closed 会被设置为 False.
+self._state.closed 在哪里赋值?  
+有且只有手动关闭连接(db.close())时, self._state.closed 会被设置为 True.  
+有且只有调用 self._state.set_connection 时, self._state.closed 会被设置为 False.  
 结论: 连接建立后, closed 永远是 False, 也就是说, 这个连接永远不会自动重连. 当出现网络抖动或数据库服务端因超时等原因断开连接时, 执行查询语句会报错!
 
 ## 实现断开自动重连
 
-用数据库连接池(PooledPostgresqlDatabase)是否可以实现断开自动重连? 答案是不行. PooledPostgresqlDatabase 虽然重写了 connect 和 _connect 方法, 超过 stale_timeout 后会自动关闭连接, 但如果连接被动关闭且没有客户端超时, 最本质的 self._state.closed 依然是 False, 最终查询依然会报异常.
-PooledPostgresqlDatabase 的真正目的是防止高并发场景下连接耗尽, 而不是实现自动重连.
+如何实现断开自动重连呢?  
+用数据库连接池(PooledPostgresqlDatabase)是否可以实现断开自动重连? 答案是勉强行. 当网络出现抖动, 最本质的 self._state.closed 依然是 False, 最终查询依然会报异常. 只不过当这个连接超过 stale_timeout 后, 会被自动关闭, 所以, 在失效N秒(stale_timeout设置)后, 数据库连接又"看起来"恢复了.  
+我认为, PooledPostgresqlDatabase 的真正目的是防止高并发场景下连接耗尽, 而不是实现自动重连.
 
 ```python
 def _connect(self):
@@ -228,7 +266,7 @@ def _connect(self):
     return conn
 ```
 
-最终的 MySQL 解决方案是 ReconnectMixin.
+最终的基于 MySQL 解决方案是 ReconnectMixin.  
 ReconnectMixin 重写了 execute_sql, 包裹了执行查询时的异常. 如果捕获到特定异常, 则尝试重连数据库.
 
 ```python
@@ -251,62 +289,9 @@ def _reconnect(self, func, *args, **kwargs):
         return func(*args, **kwargs) # 再次执行
 ```
 
-很遗憾, 针对PostgreSQL, peewee 官方并没有类似的自动重连机制, 可能是因为 PostgreSQL 本身没有 idle 过长自动断开的机制. 最后我手动实现了一个简化版, 供参考:
+很遗憾, 针对PostgreSQL, peewee 官方并没有类似的自动重连机制, 可能是因为 PostgreSQL 本身没有 idle 过长自动断开的机制. 最后我手动山寨了一个简化版, 也就是本文开头的那个案例.
 
-```python
-import time
-
-import peewee
-from playhouse.pool import PooledPostgresqlDatabase
-
-
-class ReconnectMixin:
-    def execute_sql(self, sql, params=None, commit=None):
-        try:
-            super(ReconnectMixin, self).execute_sql(sql, params)
-        except Exception as e:
-            if self.in_transaction():
-                raise e
-        if not self.is_closed():
-            self.close()
-            self.connect()
-
-        return super(ReconnectMixin, self).execute_sql(sql, params)
-
-
-class MyDb(ReconnectMixin, PooledPostgresqlDatabase):
-    pass
-
-
-db = MyDb(
-    database="db",
-    user="usr",
-    password="passwd",
-    host="localhost",
-    port=5432,
-    max_connections=20,
-    stale_timeout=300,
-)
-
-
-class AModel(peewee.Model):
-    id = peewee.AutoField(primary_key=True)
-    name = peewee.CharField(max_length=255)
-
-    class Meta:
-        database = db
-
-
-while True:
-    try:
-        print(list(AModel.select()))
-        time.sleep(1)
-    except Exception as e:
-        time.sleep(1)
-        print(f"Error: {e}")
-```
-
-最终实现的效果:  
+实现的效果:  
 
 ![最终实现效果](https://gitee.com/chaleaoch_223/cdn/raw/master/202571220361745o00s7169PixPin_2025-07-12_16-25-41.gif)
 
@@ -314,7 +299,8 @@ while True:
 
 > self._initialize_connection(self._state.conn) # 这是一个回调, peewee 本身没有具体实现, 应用层可自定义, 后面会有举例
 
-前面欠了一个例子没有解释, 假设DBA不给我们统一的timezone, 导致我们写入的datetime数据不对, 需要每次建立连接的时候, 执行一个一次性的SQL `SET TIME ZONE 'UTC'`
+前面的代码注释中, 有一个例子没有解释  
+假设DBA不给我们统一的timezone, 导致我们写入的datetime数据不对, 需要每次建立连接的时候, 执行一个一次性的SQL `SET TIME ZONE 'UTC'`
 
 ```python
 class MyPooledPostgresqlDatabase(PooledPostgresqlDatabase):
