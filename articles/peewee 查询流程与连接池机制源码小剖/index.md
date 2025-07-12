@@ -1,5 +1,5 @@
 ---
-title: "peewee是如何查询的"
+title: "peewee 查询流程与连接池机制源码小剖"
 publish_time: "2025-07-11"
 updates:
 hidden: false
@@ -308,7 +308,7 @@ while True:
 
 最终实现的效果:  
 
-![最终实现的效果](https://files.catbox.moe/xwig9z.gif)
+![最终实现效果](https://gitee.com/chaleaoch_223/cdn/raw/master/202571220361745o00s7169PixPin_2025-07-12_16-25-41.gif)
 
 ## 最后一个例子
 
