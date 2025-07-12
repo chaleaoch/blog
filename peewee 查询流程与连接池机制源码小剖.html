@@ -1,0 +1,800 @@
+<!DOCTYPE html><html lang="zh-cn"><head>
+  <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="author" content="chaleaoch">
+<meta name="keywords" content="HTML, CSS, JavaScript, Web, Front-End">
+
+<!-- Google Analytics -->
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-CESZTRKM96"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-CESZTRKM96');
+</script>
+
+<!-- open graph -->
+<meta property="og:type" content="website">
+<meta property="og:image" content="/6ed5faa0573b2a5a9d47232c9a71fb88.png">
+
+<link rel="shortcut icon" type="image/png" href="/6ed5faa0573b2a5a9d47232c9a71fb88.png">
+<link rel="sitemap" type="application/xml" href="/sitemap.xml">
+
+<link rel="preload" href="/cc394412af566c72fee893bc41f9cb9f.ttf" as="font" crossorigin="anonymous">
+<link rel="preload" href="/47aaa7abfc6c12aa5eca84b037328968.ttf" as="font" crossorigin="anonymous">
+
+  <style>
+  @font-face {
+    font-family: common_font;
+    src: url(/47aaa7abfc6c12aa5eca84b037328968.ttf);
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    --content-max-width: 840px;
+
+    --primary-color: rgb(237 106 94);
+
+    --normal-color: #333;
+    --secondary-color: #888;
+    --tertiary-color: #ddd;
+    --backgroud: rgb(255 255 255);
+
+    --border-radius: 2px;
+    --transition-duration: 0.3s;
+
+    background-color: var(--backgroud);
+    transition: background-color var(--transition-duration);
+  }
+
+  figure {
+    margin-inline: 0;
+  }
+</style>
+
+
+  <title>peewee 查询流程与连接池机制源码小剖 - 阿超.log</title>
+  <meta name="description" content="<p style=&quot;color: rgba(127, 127, 127, 0.9);&quot;>最近在工作中遇到一个 bug, 需要深入了解 peewee 的数据库连接实现. 本文记录了我的分析过程, 方便日后查阅.</p>  版本信息:  ``` peewee == 3.17.6 psycopg2 == ......">
+  <meta property="og:description" content="<p style=&quot;color: rgba(127, 127, 127, 0.9);&quot;>最近在工作中遇到一个 bug, 需要深入了解 peewee 的数据库连接实现. 本文记录了我的分析过程, 方便日后查阅.</p>  版本信息:  ``` peewee == 3.17.6 psycopg2 == ......">
+
+  <link rel="preload" href="/2e442d3479d981b912299236ddc9c9eb.ttf" as="font" crossorigin="anonymous">
+  <style>
+    @font-face {
+      font-family: article_font_peewee 查询流程与连接池机制源码小剖;
+      src: url(/2e442d3479d981b912299236ddc9c9eb.ttf);
+    }
+    article {
+      font-family: article_font_peewee 查询流程与连接池机制源码小剖;
+    }
+  </style>
+  
+  <link rel="stylesheet" href="/ece570de77ba673c17121d06fc929bd9.css">
+</head>
+
+<body>
+  <style>
+  @font-face {
+    font-family: title_font;
+    src: url(/cc394412af566c72fee893bc41f9cb9f.ttf);
+  }
+
+  .page-header {
+    max-inline-size: var(--content-max-width);
+    margin-block: 50px 40px;
+    margin-inline: auto;
+    padding-inline: 30px;
+    display: flex;
+    align-items: center;
+  }
+
+  .page-header_title {
+    flex: 1;
+    min-inline-size: 0;
+    font-size: min(8vw, 56px);
+    font-family: title_font;
+    margin: 0;
+    color: var(--normal-color);
+  }
+
+  .page-header_title > a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .page-header_icon {
+    margin-inline-start: 10px;
+  }
+
+  .page-header_icon > img {
+    user-select: none;
+    inline-size: 20px;
+    block-size: 20px;
+  }
+</style>
+
+<header class="page-header">
+  
+    <h2 class="page-header_title">
+      <a href="/">阿超.log</a>
+    </h2>
+  
+  <a class="page-header_icon" href="/rss.xml" target="_blank">
+    <img src="/e31ad23031e5bcb34e8d4a424ba0c100.png" alt="rss">
+  </a>
+  <a class="page-header_icon" href="https://github.com/chaleaoch/animal-photosynthesis" target="_blank">
+    <img src="/184c800e11079b13904f308161071b62.png" alt="github">
+  </a>
+  <!-- <a class="page-header_icon" href="//i.mebtte.com" target="_blank">
+    <img src="/author.png" alt="author" />
+  </a> -->
+</header>
+
+  <article>
+    <style>
+.article-header {
+  max-inline-size: var(--content-max-width);
+  margin-block: 40px;
+  margin-inline: auto;
+  padding-inline: 30px;
+}
+
+.article-title {
+  color: var(--primary-color);
+  font-size: 32px;
+  margin: 0;
+  padding: 0;
+  line-height: 1.5;
+}
+
+.article-title a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.article-publish-time {
+  color: var(--secondary-color);
+  font-size: 14px;
+  font-family: common_font;
+}
+</style>
+
+<section class="article-header">
+  <h1 class="article-title">
+    <a href="/peewee 查询流程与连接池机制源码小剖">peewee 查询流程与连接池机制源码小剖</a>
+  </h1>
+  <time class="article-publish-time">2025-07-11</time>
+</section>
+
+    <style>
+  article {
+    --article-space: 30px;
+  }
+
+  article a {
+    color: var(--normal-color);
+    text-decoration-color: var(--primary-color);
+  }
+
+  article h2, article h3, article h4, article h5, article h6 {
+    max-inline-size: var(--content-max-width);
+    padding-inline: 30px;
+    margin-inline: auto;
+    line-height: 1.5;
+    color: var(--normal-color);
+  }
+
+  article h2 {
+    margin-block-start: 28px;
+    font-size: 28px;
+  }
+
+  article h3 {
+    margin-block-start: 26px;
+    font-size: 25px;
+  }
+
+  article h4 {
+    margin-block-start: 24px;
+    font-size: 22px;
+  }
+
+  article h5 {
+    margin-block-start: 22px;
+    font-size: 19px;
+  }
+
+  article h6 {
+    margin-block-start: 20px;
+    font-size: 16px;
+  }
+
+  article p {
+    max-inline-size: var(--content-max-width);
+
+    margin-block: 15px;
+    margin-inline: auto;
+    padding-inline: 30px;
+
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--normal-color);
+    word-break: break-word;
+  }
+
+  article p code, article ul code, article ol code, article table code {
+    padding-inline: 4px;
+    border-radius: var(--border-radius);
+    background: rgba(237, 106, 94, 0.3);
+  }
+
+  article pre {
+    max-inline-size: var(--content-max-width) !important;
+    margin-block: 15px !important;
+    margin-inline: auto !important;
+    font-size: 14px !important;
+    box-sizing: border-box;
+    border-radius: var(--border-radius) !important;
+    tab-size: 2 !important;
+    padding: 0 !important;
+  }
+
+  article pre code {
+    display: block;
+    margin-block: 20px !important;
+    margin-inline: 30px !important;
+    overflow: auto !important;
+    font-size: inherit !important;
+  }
+
+  article hr {
+    max-inline-size: var(--content-max-width);
+    margin-block: 40px;
+    margin-inline: auto;
+    padding-inline: var(--article-space);
+    border: none;
+  }
+
+  article hr::after{
+    content: '';
+    display: block;
+    block-size: 1px;
+    background-color:var(--tertiary-color);
+  }
+
+  article blockquote {
+    max-inline-size: var(--content-max-width);
+    padding-inline: var(--article-space);
+    margin-block: 15px;
+    margin-inline: auto;
+    position: relative;
+    font-style: italic;
+    font-size: 16px;
+    color: var(--secondary-color);
+  }
+
+  .table-container {
+    max-inline-size: var(--content-max-width);
+    padding-inline: 30px;
+    margin-block: 15px;
+    margin-inline: auto;
+  }
+
+  .table-container table {
+    border-collapse: collapse;
+  }
+
+  .table-container th, .table-container td {
+    font-size: 14px;
+    color: var(--normal-color);
+    border: 1px solid var(--tertiary-color);
+    padding: 10px;
+    text-align: left;
+  }
+
+  .table-container th {
+    font-size: 16px;
+    text-align: left;
+  }
+
+  article blockquote::before {
+    content: '';
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 30px;
+    inline-size: 3px;
+    block-size: 100%;
+    background-color: var(--primary-color);
+  }
+
+  article blockquote p {
+    font-size: 16px;
+    color: inherit;
+    max-inline-size: unset;
+    padding: 0;
+    margin-inline-start: 30px;
+  }
+
+  article ul,
+  article ol {
+    max-inline-size: var(--content-max-width);
+    padding-inline: 30px;
+    margin-block: 15px;
+    margin-inline: auto;
+    color: var(--normal-color);
+    line-height: 1.5;
+  }
+
+  article ol {
+    counter-reset: li-count;
+  }
+  
+  article ul li, article ol li {
+    display: block;
+    margin-block: 5px;
+    position: relative;
+  }
+
+  article ol li {
+    counter-increment: li-count;
+  }
+
+  article ul li::before {
+    content: '';
+    display: inline-block;
+    inline-size: 6px;
+    block-size: 6px;
+
+    margin-inline-end: 10px;
+
+    vertical-align: middle;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+  }
+
+  article ol li::before {
+    content: counter( li-count) '. ';
+    color: var(--primary-color);
+  }
+
+  article figcaption {
+    font-size: 12px;
+    color: var(--secondary-color);
+    text-align: center;
+    margin-block-start: 5px;
+  }
+
+  .figure-img {
+    max-inline-size: var(--content-max-width);
+    padding-inline: 30px;
+    margin-block: 15px;
+    margin-inline: auto;
+  }
+
+  .figure-img img {
+    display: block;
+    max-inline-size: 100%;
+    margin-inline: auto;
+    border-radius: var(--border-radius);
+  }
+  
+  .figure-video {
+    max-inline-size: var(--content-max-width);
+    padding-inline: 30px;
+    margin-block: 15px;
+    margin-inline: auto;
+  }
+
+  .figure-video video {
+    display: block;
+    max-inline-size: 100%;
+    margin-inline: auto;
+  }
+
+  .figure-iframe {
+    inline-size: 100%;
+    margin-block: 15px;
+  }
+
+  .figure-iframe iframe {
+    display: block;
+    inline-size: 100%;
+    max-inline-size: var(--content-max-width);
+    margin-inline: auto;
+    block-size: 640px;
+    border: 1px solid var(--tertiary-color);
+    border-radius: var(--border-radius);
+  }
+
+  strong {
+    font-weight: normal;
+    text-decoration: underline;
+  }
+</style>
+
+<section>
+  <p style="color: rgba(127, 127, 127, 0.9);">最近在工作中遇到一个 bug, 需要深入了解 peewee 的数据库连接实现. 本文记录了我的分析过程, 方便日后查阅.</p>
+<p>版本信息:</p>
+<pre><code>peewee == 3.17.6
+psycopg2 == 2.9.9   
+</code></pre>
+<h2 id="">案例</h2>
+<pre><code class="python language-python">import time
+
+import peewee
+from playhouse.pool import PooledPostgresqlDatabase
+
+
+class ReconnectMixin:
+    def execute_sql(self, sql, params=None, commit=None):
+        try:
+            super(ReconnectMixin, self).execute_sql(sql, params)
+        except Exception as e:
+            if self.in_transaction():
+                raise e
+        if not self.is_closed():
+            self.close()
+            self.connect()
+
+        return super(ReconnectMixin, self).execute_sql(sql, params)
+
+
+class MyDb(ReconnectMixin, PooledPostgresqlDatabase):
+    pass
+
+
+db = MyDb(
+    database="db",
+    user="usr",
+    password="passwd",
+    host="localhost",
+    port=5432,
+    max_connections=20,
+    stale_timeout=300,
+)
+
+
+class AModel(peewee.Model):
+    id = peewee.AutoField(primary_key=True)
+    name = peewee.CharField(max_length=255)
+
+    class Meta:
+        database = db
+
+
+while True:
+    try:
+        print(list(AModel.select()))
+        time.sleep(1)
+    except Exception as e:
+        time.sleep(1)
+        print(f"Error: {e}")
+</code></pre>
+<p>入口是 <code>list(AModel.select())</code><br>
+让我们来看看 peewee 是如何利用 pg 的 cursor 查询数据的.
+本文只分析查询的执行过程, 不涉及sql是如何生成的, 以及对sql执行结果的处理. 即只关注 <code>cursor.execute(sql, params or ())</code></p>
+<h2 id="amodelpeeweemodelmodelbasedb">前置知识: AModel 的父类 (<code>peewee.Model</code>) 的元类 (<code>ModelBase</code>) 会加载 <code>db</code> 对象</h2>
+<pre><code class="python language-python">class AModel(peewee.Model):
+# AModel 的父类 peewee.Model --&gt; peewee.py 6645
+class Model(with_metaclass(ModelBase, Node)):
+# peewee.Model 的元类 ModelBase.__new__ --&gt; peewee.py 6547
+cls._meta = Meta(cls, **meta_options)
+</code></pre>
+<p>这里的 <code>cls</code> 就是 <code>AModel</code>, <code>Meta</code> 具体内容暂且不表, 关键在于 <code>meta_options</code>, 它是一个字典结构, 包含了上面例子中的 <code>database = db</code>. 也就是说, <code>cls._meta.database == db</code>, 后面会用到.</p>
+<h2 id="modelselectdatabaseexecute">从 Model.Select 到 database.execute()</h2>
+<p><code>AModel.select()</code> 会返回一个 <code>ModelSelect</code> 对象:</p>
+<pre><code class="python language-python">class ModelSelect(BaseModelSelect, Select): # peewee.py 7339
+    def __init__(self, model, fields_or_models, is_default=False): # model 是 AModel
+        self.model = self._join_ctx = model
+        self._joins = {}
+        self._is_default = is_default
+        fields = _normalize_model_select(fields_or_models)
+        super(ModelSelect, self).__init__([model], fields)
+</code></pre>
+<p>当执行 <code>list(AModel.select())</code> 时, 会调用 <code>ModelSelect</code> 对象的 <code>__iter__</code> 方法, 该方法内部会调用 <code>self.execute()</code> 来执行查询:</p>
+<pre><code class="python language-python">def __iter__(self): # peewee.py 7273, self 是 ModelSelect 对象
+    if not self._cursor_wrapper:
+        self.execute()
+    return iter(self._cursor_wrapper)
+</code></pre>
+<p>虽然调用方没有传参, 但由于装饰器 <code>database_required</code> 的作用, <code>database</code> 参数会自动传递给 <code>execute</code> 方法.</p>
+<pre><code class="python language-python">@database_required # peewee.py 2105
+def execute(self, database): # self 是 ModelSelect 对象
+    return self._execute(database)
+# ...
+def database_required(method): # peewee.py 2029
+    @wraps(method)
+    def inner(self, database=None, *args, **kwargs): # self 是 ModelSelect 对象
+        database = self._database if database is None else database # 这里传递进去的
+        if not database:
+            raise InterfaceError('Query must be bound to a database in order '
+                                 'to call "%s".' % method.__name__)
+        return method(self, database, *args, **kwargs) # 这个 method 就是 self.execute()
+    return inner
+</code></pre>
+<p>那么, <code>self._database</code> 是如何被赋值的?</p>
+<pre><code class="python language-python">class _ModelQueryHelper(object): # 这个类是 ModelSelect 的父类
+    default_row_type = ROW.MODEL
+
+    def __init__(self, *args, **kwargs):
+        super(_ModelQueryHelper, self).__init__(*args, **kwargs)
+        if not self._database:
+            self._database = self.model._meta.database # peewee.py 7212
+</code></pre>
+<p>结合前面的内容可以推导出:<br>
+<code>self.model._meta.database</code> 就是之前的 <code>db</code>, 也就是 <code>AModel</code> 的 <code>Meta</code> 类中的 <code>database = db</code>.</p>
+<h3 id="database">"执行权杖"的传递: 交给 <code>database</code></h3>
+<pre><code class="python language-python">def _execute(self, database): # peewee.py 2278
+    if self._cursor_wrapper is None:
+        cursor = database.execute(self) # 这里的 database 就是之前的 db, 由此进入 database 的流程.
+        self._cursor_wrapper = self._get_cursor_wrapper(cursor)
+    return self._cursor_wrapper
+</code></pre>
+<p>整理一下, 代码的执行顺序如下:</p>
+<ol>
+<li><code>AModel.select()</code>  返回 <code>ModelSelect</code> 对象</li>
+<li><code>list(AModel.select())</code> 调用 <code>ModelSelect</code> 对象的 <code>__iter__</code> 方法</li>
+<li>调用 <code>ModelSelect</code> 的 <code>execute</code> 方法</li>
+<li>调用 <code>ModelSelect</code> 的 <code>_execute</code> 方法</li>
+<li>调用 <code>database.execute(self)</code></li>
+</ol>
+<h2 id="databaseexecuteselfcursorexecutesqlparamsor">从 <code>database.execute(self)</code> 到 <code>cursor.execute(sql, params or ())</code></h2>
+<p>到目前为止, 这里的 <code>database</code> 特指 <code>PostgresqlDatabase</code>, 实际上 peewee 提供了多种数据库连接对象和 <code>Mixin</code>, 后面会有说明.</p>
+<pre><code class="python language-python">def execute(self, query, commit=None, **context_options):
+    if commit is not None:
+        __deprecated__('"commit" has been deprecated and is a no-op.')
+    ctx = self.get_sql_context(**context_options)
+    sql, params = ctx.sql(query).query() # 这里生成sql和参数
+    return self.execute_sql(sql, params) # 执行sql
+</code></pre>
+<p>这里的 self 是 PostgresqlDatabase 的父类 Database, 接下来的一系列方法调用都在 Database 中, 一路跳转即可. 为节约篇幅, 这里用伪代码演示:</p>
+<pre><code class="txt language-txt">execute_sql --&gt; cursor = self.cursor() --&gt; {
+    if self.is_closed() and auto_connect: # 数据库连接关闭且自动连接
+        self.connect() # 这里做了什么?
+    return self._state.conn.cursor() # self._state 是什么?
+}
+</code></pre>
+<p>继续看 self.connect() 做了什么:</p>
+<pre><code class="txt language-txt">self.connect --&gt; {
+    if not self._state.closed: # 如果已打开
+        if reuse_if_open: # 且允许重用
+            return False # 直接返回, 不会重新建立连接
+        raise OperationalError('Connection already opened.') # 否则抛出异常
+    self._state.reset() # self._state 是什么?
+    self._state.set_connection(self._connect()) # self._connect() 由子类实现, 这里的子类是 PostgresqlDatabase
+    ...
+    self._initialize_connection(self._state.conn) # 这是一个回调, peewee 本身没有具体实现, 应用层可自定义, 后面会有举例
+}
+</code></pre>
+<p>父类(Database)的 <code>_connect</code> 是一个抽象方法, 必须由子类实现. 这里是 PostgresqlDatabase._connect()</p>
+<pre><code class="txt language-txt">def _connect(self):
+    params = self.connect_params.copy() # 实例化PostgresqlDatabase时传入的参数
+    ...
+    conn = psycopg2.connect(**params) # 建立连接
+    ...
+    return conn # 返回连接
+</code></pre>
+<h3 id="-1">流程总结</h3>
+<ol>
+<li>获取 cursor</li>
+<li>调用 <code>self.connect()</code><ol>
+<li>检查连接状态, 如果已连接且不允许重用, 则抛出异常</li>
+<li>如果已连接且允许重用, 则直接返回, 不重连</li>
+<li>如果未连接, 调用 psycopg2.connect(**params) 建立连接</li></ol></li>
+<li>利用 cursor 执行 sql</li>
+</ol>
+<p>整体流程大致如此, 但这里还留下一些疑问:</p>
+<h3 id="self_state">self._state</h3>
+<p><code>self._state</code> 是什么?  </p>
+<p><code>self._state</code> 默认是一个 ThreadLocal 对象, 用于存储当前线程的数据库连接状态信息. 这里的 <code>self._state.conn</code> 就是通过 set_connection 建立的连接.</p>
+<p>也就是说, 这个连接状态只在当前线程有效. 如果是多线程场景, 每个线程都会建立一个新的连接.</p>
+<p><code>self._state.closed</code> 在哪里赋值?<br>
+有且只有手动关闭连接(<code>db.close()</code>)时, <code>self._state.closed</code> 会被设置为 True.<br>
+有且只有调用 <code>self._state.set_connection</code> 时, <code>self._state.closed</code> 会被设置为 False.<br>
+结论: 连接建立后, closed 永远是 False, 也就是说, 这个连接永远不会自动重连. 当出现网络抖动或数据库服务端因超时等原因断开连接时, 执行查询语句会报错!</p>
+<h2 id="-2">实现断开自动重连</h2>
+<p>如何实现断开自动重连呢?<br>
+用数据库连接池(PooledPostgresqlDatabase)是否可以实现断开自动重连? 答案是勉强行. 当网络出现抖动, 最本质的 <code>self._state.closed</code> 依然是 False, 最终查询依然会报异常. 只不过当这个连接超过 <code>stale_timeout</code> 后, 会被自动关闭, 所以, 在失效N秒(<code>stale_timeout</code>设置)后, 数据库连接又"看起来"恢复了.<br>
+本质上讲, PooledPostgresqlDatabase 的真正目的是防止高并发场景下连接耗尽, 而不是实现自动重连.</p>
+<pre><code class="python language-python">def _connect(self):
+    while True:
+        try:
+            # Remove the oldest connection from the heap.
+            ts, _, c_conn = heapq.heappop(self._connections) # 从连接池中获取连接
+            conn = c_conn
+        except IndexError:
+            ts = conn = None
+            logger.debug('No connection available in pool.')
+            break
+        else:
+            if self._is_closed(conn): # 如果这个连接已关闭
+                ts = conn = None
+            elif self._stale_timeout and self._is_stale(ts): # 如果超时
+                self._close(conn, True) # 超时关闭
+                ts = conn = None
+            else:
+                break
+    if conn is None: # 没能从池子里找到可用连接
+        if self._max_connections and (
+                len(self._in_use) &gt;= self._max_connections): # 连接池已满
+            raise MaxConnectionsExceeded('Exceeded maximum connections.')
+        conn = super(PooledDatabase, self)._connect() # 新建连接
+        ...
+    self._in_use[key] = PoolConnection(ts, conn, time.time()) # 放入池子
+    return conn
+</code></pre>
+<p>如果是基于 MySQL 可以使用官方提供的 ReconnectMixin.<br>
+ReconnectMixin 重写了 execute_sql, 包裹了执行查询时的异常. 如果捕获到特定异常, 则尝试重连数据库.</p>
+<pre><code class="python language-python">def execute_sql(self, sql, params=None, commit=None):
+    ...
+    return self._reconnect(super(ReconnectMixin, self).execute_sql, sql, params)
+
+def _reconnect(self, func, *args, **kwargs):
+    try:
+        return func(*args, **kwargs)
+    except Exception as exc:
+        # 如果在事务中, 不自动重连, 直接抛出异常
+        if self.in_transaction():
+            raise exc
+        ...
+        if not self.is_closed():
+            self.close()
+            self.connect() # 重连
+
+        return func(*args, **kwargs) # 再次执行
+</code></pre>
+<p>很遗憾, 针对PostgreSQL, peewee 官方并没有类似的自动重连机制, 可能是因为 PostgreSQL 本身没有 idle 过长自动断开的机制. 最后我手动山寨了一个简化版, 也就是本文开头的那个案例.</p>
+
+      <figure class="figure-img">
+        <a href="/82a9c39686993059dc8da7b9324ad3a3.gif" target="_blank">
+          <img src="/82a9c39686993059dc8da7b9324ad3a3.gif" alt="最终实现效果" title="最终实现效果" loading="lazy">
+        </a>
+        <figcaption>最终实现效果</figcaption>
+      </figure>
+    
+<h2 id="-3">最后一个例子</h2>
+<blockquote>
+  <p>self.<em>initialize</em>connection(self._state.conn) # 这是一个回调, peewee 本身没有具体实现, 应用层可自定义, 后面会有举例</p>
+</blockquote>
+<p>前面的代码注释中, 有一个例子没有解释<br>
+假设DBA不给我们统一的timezone, 导致我们写入的datetime数据不对, 需要每次建立连接的时候, 执行一个一次性的SQL <code>SET TIME ZONE 'UTC'</code></p>
+<pre><code class="python language-python">class MyPooledPostgresqlDatabase(PooledPostgresqlDatabase):
+    def _initialize_connection(self, conn):
+        with conn.cursor() as cur:
+            cur.execute("SET TIME ZONE 'UTC';")
+        return conn
+</code></pre>
+<p>&lt;完&gt;</p>
+</section>
+
+    
+  </article>
+  
+    
+<style>
+  .article-actions {
+    max-inline-size: var(--content-max-width);
+
+    display: flex;
+    align-items: center;
+
+    margin-block: 40px;
+    margin-inline: auto;
+    padding-inline: 30px;
+
+    font-family: common_font;
+    color: var(--normal-color);
+  }
+
+  .article-actions_action:not(:last-child)::after {
+    content: '·\00a0';
+  }
+
+  .article-actions_action > a {
+    color: inherit;
+    text-decoration-color: var(--primary-color);
+  }
+
+  @media (max-width: 520px) {
+    .article-actions {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .article-actions_action::before {
+      content: '·';
+    }
+
+    .article-actions_action:not(:last-child)::after {
+      content: '';
+    }
+  }
+</style>
+
+<div class="article-actions">
+  <span class="article-actions_action">
+    使用 <a href="https://github.com/chaleaoch/animal-photosynthesis/discussions">Discussions</a> 讨论
+  </span>
+  <span class="article-actions_action">
+    在 <a href="https://github.com/chaleaoch/animal-photosynthesis/edit/master/articles/peewee 查询流程与连接池机制源码小剖/index.md">Github</a> 上编辑
+  </span>
+  <span class="article-actions_action">
+    分享到 <a href="https://www.twitter.com/share?text=peewee%20%E6%9F%A5%E8%AF%A2%E6%B5%81%E7%A8%8B%E4%B8%8E%E8%BF%9E%E6%8E%A5%E6%B1%A0%E6%9C%BA%E5%88%B6%E6%BA%90%E7%A0%81%E5%B0%8F%E5%89%96&amp;url=https%3A%2F%2Fchaleaoch.com%2Fpeewee%20%E6%9F%A5%E8%AF%A2%E6%B5%81%E7%A8%8B%E4%B8%8E%E8%BF%9E%E6%8E%A5%E6%B1%A0%E6%9C%BA%E5%88%B6%E6%BA%90%E7%A0%81%E5%B0%8F%E5%89%96">Twitter</a>
+  </span>
+</div>
+
+  
+  <!-- <script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8404651063516637"
+  crossorigin="anonymous"
+></script>
+<style>
+  .adsbygoogle {
+    max-width: 100%;
+    margin-block: 40px;
+    overflow: hidden;
+    text-align: center;
+  }
+
+  .adsbygoogle:empty {
+    display: none;
+  }
+</style>
+<ins
+  class="adsbygoogle"
+  style="display:block"
+  data-ad-client="ca-pub-8404651063516637"
+  data-ad-slot="7746538242"
+  data-ad-format="auto"
+  data-full-width-responsive="true"
+></ins>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+ -->
+  <style>
+.page-footer {
+  font-size: 12px;
+  max-inline-size: var(--content-max-width);
+  margin-block: 40px;
+  margin-inline: auto;
+  padding-inline: 30px;
+  font-family: common_font;
+  color: var(--secondary-color);
+}
+
+.page-footer > a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.page-footer > a:hover {
+  color: var(--primary-color);
+}
+
+.page-footer > .underline {
+  text-decoration: underline;
+}
+</style>
+
+<footer class="page-footer">
+  <a href="https://github.com/chaleaoch/animal-photosynthesis/blob/master/license">©</a>
+  2025
+  &nbsp;
+  <!-- <a class="underline" href="https://i.mebtte.com">MEBTTE</a> -->
+  <!-- &nbsp;|&nbsp; -->
+  <!-- <a class="underline" href="https://stats.uptimerobot.com/4nO5RUYB60">UPTIME</a>
+  &nbsp;|&nbsp; -->
+  <!-- <a class="underline" href="/support">支持我</a> -->
+</footer>
+
+  <script src="/39c97c2884c3a2b5e64c8f085b843d4e.js"></script>
+  <script src="/0ec215ad131a36856d3d20423b9aca26.js" async="" defer=""></script>
+
+
+
+</body></html>
