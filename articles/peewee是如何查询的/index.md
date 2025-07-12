@@ -251,7 +251,7 @@ def _reconnect(self, func, *args, **kwargs):
         return func(*args, **kwargs) # 再次执行
 ```
 
-很遗憾, PostgreSQL 官方并没有类似的自动重连机制, 可能是因为 PostgreSQL 本身没有 idle 过长自动断开的机制. 最后我手动实现了一个简化版, 供参考:
+很遗憾, 针对PostgreSQL, peewee 官方并没有类似的自动重连机制, 可能是因为 PostgreSQL 本身没有 idle 过长自动断开的机制. 最后我手动实现了一个简化版, 供参考:
 
 ```python
 import time
@@ -306,7 +306,7 @@ while True:
         print(f"Error: {e}")
 ```
 
-最终实现的效果:
+最终实现的效果:  
 ![xwig9z.gif](https://files.catbox.moe/xwig9z.gif)
 
 ## 最后一个例子
