@@ -221,20 +221,21 @@ def _connect(self):
 
 ### self._state
 
-self._state 是什么?  
-self._state 默认是一个 ThreadLocal 对象, 用于存储当前线程的数据库连接状态信息. 这里的 `self._state.conn` 就是通过 set_connection 建立的连接.
+`self._state` 是什么?  
+
+`self._state` 默认是一个 ThreadLocal 对象, 用于存储当前线程的数据库连接状态信息. 这里的 `self._state.conn` 就是通过 set_connection 建立的连接.
 
 也就是说, 这个连接状态只在当前线程有效. 如果是多线程场景, 每个线程都会建立一个新的连接.
 
-self._state.closed 在哪里赋值?  
-有且只有手动关闭连接(db.close())时, self._state.closed 会被设置为 True.  
-有且只有调用 self._state.set_connection 时, self._state.closed 会被设置为 False.  
+`self._state.closed` 在哪里赋值?  
+有且只有手动关闭连接(`db.close()`)时, `self._state.closed` 会被设置为 True.  
+有且只有调用 `self._state.set_connection` 时, `self._state.closed` 会被设置为 False.  
 结论: 连接建立后, closed 永远是 False, 也就是说, 这个连接永远不会自动重连. 当出现网络抖动或数据库服务端因超时等原因断开连接时, 执行查询语句会报错!
 
 ## 实现断开自动重连
 
 如何实现断开自动重连呢?  
-用数据库连接池(PooledPostgresqlDatabase)是否可以实现断开自动重连? 答案是勉强行. 当网络出现抖动, 最本质的 self._state.closed 依然是 False, 最终查询依然会报异常. 只不过当这个连接超过 stale_timeout 后, 会被自动关闭, 所以, 在失效N秒(stale_timeout设置)后, 数据库连接又"看起来"恢复了.  
+用数据库连接池(PooledPostgresqlDatabase)是否可以实现断开自动重连? 答案是勉强行. 当网络出现抖动, 最本质的 `self._state.closed` 依然是 False, 最终查询依然会报异常. 只不过当这个连接超过 stale_timeout 后, 会被自动关闭, 所以, 在失效N秒(stale_timeout设置)后, 数据库连接又"看起来"恢复了.  
 我认为, PooledPostgresqlDatabase 的真正目的是防止高并发场景下连接耗尽, 而不是实现自动重连.
 
 ```python
