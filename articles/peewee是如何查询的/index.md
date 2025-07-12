@@ -314,7 +314,7 @@ while True:
 
 > self._initialize_connection(self._state.conn) # 这是一个回调, peewee 本身没有具体实现, 应用层可自定义, 后面会有举例
 
-这里举一个例子, DBA不给我们统一的timezone, 导致我们写入的datetime数据不对, 需要每次建立连接的时候, 执行一个一次性的SQL `SET TIME ZONE 'UTC'`
+前面欠了一个例子没有解释, DBA不给我们统一的timezone, 导致我们写入的datetime数据不对, 需要每次建立连接的时候, 执行一个一次性的SQL `SET TIME ZONE 'UTC'`
 
 ```python
 class MyPooledPostgresqlDatabase(PooledPostgresqlDatabase):
