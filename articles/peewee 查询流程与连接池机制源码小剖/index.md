@@ -293,8 +293,7 @@ def _reconnect(self, func, *args, **kwargs):
 很遗憾, 针对PostgreSQL, peewee 官方并没有类似的自动重连机制, 可能是因为 PostgreSQL 本身没有 idle 过长自动断开的机制. 最后我手动山寨了一个简化版, 也就是本文开头的那个案例.
 
 实现的效果:  
-
-![最终实现效果](https://gitee.com/chaleaoch_223/cdn/raw/master/202571220361745o00s7169PixPin_2025-07-12_16-25-41.gif)
+![最终实现效果](./index/1.gif)  
 
 ## 最后一个例子
 
