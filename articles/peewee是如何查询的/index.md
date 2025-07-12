@@ -103,7 +103,7 @@ class _ModelQueryHelper(object): # 这个类是 ModelSelect 的父类
 结合前面的内容可以推导出:
 `self.model._meta.database` 就是之前的 `db`, 也就是 `AModel` 的 `Meta` 类中的 `database = db`.
 
-### "执行权杖"的传递: 交给 database
+### "执行权杖"的传递: 交给 `database`
 
 ```python
 def _execute(self, database): # peewee.py 2278
@@ -115,15 +115,15 @@ def _execute(self, database): # peewee.py 2278
 
 整理一下, 代码的执行顺序如下:
 
-1. `AModel.select()`  返回 ModelSelect 对象
-2. `list(AModel.select())` 调用 ModelSelect 对象的 `__iter__` 方法
-3. 调用 ModelSelect 的 `execute` 方法
-4. 调用 ModelSelect 的 `_execute` 方法
-5. 调用 database.execute(self)
+1. `AModel.select()`  返回 `ModelSelect` 对象
+2. `list(AModel.select())` 调用 `ModelSelect` 对象的 `__iter__` 方法
+3. 调用 `ModelSelect` 的 `execute` 方法
+4. 调用 `ModelSelect` 的 `_execute` 方法
+5. 调用 `database.execute(self)`
 
 ## 从 `database.execute(self)` 到 `cursor.execute(sql, params or ())`
 
-到目前为止, 这里的 database 特指 PostgresqlDatabase, 实际上 peewee 提供了多种数据库连接对象和 Mixin, 后面会有说明.
+到目前为止, 这里的 `database` 特指 `PostgresqlDatabase`, 实际上 peewee 提供了多种数据库连接对象和 `Mixin`, 后面会有说明.
 
 ```python
 def execute(self, query, commit=None, **context_options):
@@ -308,5 +308,19 @@ while True:
 
 最终实现的效果:
 ![xwig9z.gif](https://files.catbox.moe/xwig9z.gif)
+
+## 最后一个例子
+>
+> self._initialize_connection(self._state.conn) # 这是一个回调, peewee 本身没有具体实现, 应用层可自定义, 后面会有举例
+
+这里举一个例子, DBA不给我们统一的timezone, 导致我们写入的datetime数据不对, 需要每次建立连接的时候, 执行一个一次性的SQL `SET TIME ZONE 'UTC'`
+
+```python
+class MyPooledPostgresqlDatabase(PooledPostgresqlDatabase):
+    def _initialize_connection(self, conn):
+        with conn.cursor() as cur:
+            cur.execute("SET TIME ZONE 'UTC';")
+        return conn
+```
 
 <完>
