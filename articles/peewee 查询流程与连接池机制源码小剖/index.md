@@ -236,7 +236,7 @@ def _connect(self):
 
 如何实现断开自动重连呢?  
 用数据库连接池(PooledPostgresqlDatabase)是否可以实现断开自动重连? 答案是勉强行. 当网络出现抖动, 最本质的 `self._state.closed` 依然是 False, 最终查询依然会报异常. 只不过当这个连接超过 `stale_timeout` 后, 会被自动关闭, 所以, 在失效N秒(`stale_timeout`设置)后, 数据库连接又"看起来"恢复了.  
-我认为, PooledPostgresqlDatabase 的真正目的是防止高并发场景下连接耗尽, 而不是实现自动重连.
+本质上讲, PooledPostgresqlDatabase 的真正目的是防止高并发场景下连接耗尽, 而不是实现自动重连.
 
 ```python
 def _connect(self):
