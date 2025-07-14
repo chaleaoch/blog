@@ -1,6 +1,7 @@
 # 动物的光合作用
 
-- [peewee是如何查询的1 -- 从select 到database.execute()](https://chaleaoch.com/peewee是如何查询的1 -- 从select 到cursor.execute()) <sup><sub>2025-07-11</sub></sup>
+- [Flask run 命令下的模块自动定位与导入机制](https://chaleaoch.com/Flask run 命令下的模块自动定位与导入机制) <sup><sub>2025-07-14</sub></sup>
+- [peewee 查询流程与连接池机制源码小剖](https://chaleaoch.com/peewee 查询流程与连接池机制源码小剖) <sup><sub>2025-07-11</sub></sup>
 - [python -m 和 python 直接执行的区别](https://chaleaoch.com/python -m 和 python 直接执行的区别) <sup><sub>2025-04-15</sub></sup>
 - [Ubuntu Serviver24.04安装小记](https://chaleaoch.com/ubuntu serviver24.04安装小记) <sup><sub>2024-09-02</sub></sup>
 - [cors扫盲](https://chaleaoch.com/cors扫盲) <sup><sub>2024-08-20</sub></sup>
