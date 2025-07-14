@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://chaleaoch.com</loc>
+  </url>
+  
+    <url>
+      <loc>https://chaleaoch.com/Flask run 命令下的模块自动定位与导入机制</loc>
+    </url>
+  
+    <url>
+      <loc>https://chaleaoch.com/peewee 查询流程与连接池机制源码小剖</loc>
+    </url>
+  
+    <url>
+      <loc>https://chaleaoch.com/python -m 和 python 直接执行的区别</loc>
+    </url>
+  
+    <url>
+      <loc>https://chaleaoch.com/ubuntu serviver24.04安装小记</loc>
+    </url>
+  
+    <url>
+      <loc>https://chaleaoch.com/cors扫盲</loc>
+    </url>
+  
+    <url>
+      <loc>https://chaleaoch.com/一个不带插件的flask应用4 -- flask-filter</loc>
+    </url>
+  
+    <url>
+      <loc>https://chaleaoch.com/future对象</loc>
+    </url>
+  
+    <url>
+      <loc>https://chaleaoch.com/apscheduler源码小剖</loc>
+    </url>
+  
+    <url>
+      <loc>https://chaleaoch.com/wsgi介绍</loc>
+    </url>
+  
+    <url>
+      <loc>https://chaleaoch.com/一个不带插件的flask应用3 -- app依赖反转</loc>
+    </url>
+  
+    <url>
+      <loc>https://chaleaoch.com/go包的可见性</loc>
+    </url>
+  
+    <url>
+      <loc>https://chaleaoch.com/Go代码断行规则</loc>
+    </url>
+  
+    <url>
+      <loc>https://chaleaoch.com/go切片注意事项</loc>
+    </url>
+  
+    <url>
+      <loc>https://chaleaoch.com/一个不带插件的flask应用2 -- 自定义migrate</loc>
+    </url>
+  
+    <url>
+      <loc>https://chaleaoch.com/一个不带插件的flask应用</loc>
+    </url>
+  
+    <url>
+      <loc>https://chaleaoch.com/python对属性的搜索优先级</loc>
+    </url>
+  
+    <url>
+      <loc>https://chaleaoch.com/archlinux安装xrdp踩坑记</loc>
+    </url>
+  
+</urlset>

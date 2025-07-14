@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss
+  xmlns:dc="http://purl.org/dc/elements/1.1/"
+  xmlns:content="http://purl.org/rss/1.0/modules/content/"
+  xmlns:atom="http://www.w3.org/2005/Atom"
+  version="2.0"
+>
+  <channel>
+    <title>
+      <![CDATA[阿超.log]]>
+    </title>
+    <description>
+      <![CDATA[chaleaoch 的个人博客.]]>
+    </description>
+    <link>https://chaleaoch.com</link>
+    <lastBuildDate>2025-07-14T05:02:50.472Z</lastBuildDate>
+    
+      <item>
+        <title>
+          <![CDATA[Flask run 命令下的模块自动定位与导入机制]]>
+        </title>
+        <description>
+          <![CDATA[&lt;p style=&#34;color: rgba(127, 127, 127, 0.9);&#34;&gt;在开发一个开源filter库的过程中, 需要用到写一个flask demo app去测试,因为和之前熟悉的项目结构不一样, 引起我得好奇, debug一下, 找到了其中的道道.&lt;/p&gt;  版本信息:  ``` F...]]>
+        </description>
+        <link>https://chaleaoch.com/Flask run 命令下的模块自动定位与导入机制</link>
+        <guid isPermaLink="false">Flask run 命令下的模块自动定位与导入机制</guid>
+        <pubDate>2025-07-14T00:00:00.000Z</pubDate>
+      </item>
+    
+      <item>
+        <title>
+          <![CDATA[peewee 查询流程与连接池机制源码小剖]]>
+        </title>
+        <description>
+          <![CDATA[&lt;p style=&#34;color: rgba(127, 127, 127, 0.9);&#34;&gt;最近在工作中遇到一个 bug, 需要深入了解 peewee 的数据库连接实现. 本文记录了我的分析过程, 方便日后查阅.&lt;/p&gt;  版本信息:  ``` peewee == 3.17.6 psycopg2 == ...]]>
+        </description>
+        <link>https://chaleaoch.com/peewee 查询流程与连接池机制源码小剖</link>
+        <guid isPermaLink="false">peewee 查询流程与连接池机制源码小剖</guid>
+        <pubDate>2025-07-11T00:00:00.000Z</pubDate>
+      </item>
+    
+      <item>
+        <title>
+          <![CDATA[python -m 和 python 直接执行的区别]]>
+        </title>
+        <description>
+          <![CDATA[&lt;p style=&#34;color: rgba(127, 127, 127, 0.9);&#34;&gt;水一篇笔记, 在不更新都长毛了&lt;p&gt;  假设目录结构如下  ```txt project/     ├── mymodule/     │   ├── __init__.py     │   └── utils....]]>
+        </description>
+        <link>https://chaleaoch.com/python -m 和 python 直接执行的区别</link>
+        <guid isPermaLink="false">python -m 和 python 直接执行的区别</guid>
+        <pubDate>2025-04-15T00:00:00.000Z</pubDate>
+      </item>
+    
+      <item>
+        <title>
+          <![CDATA[Ubuntu Serviver24.04安装小记]]>
+        </title>
+        <description>
+          <![CDATA[&lt;p style=&#34;color: rgba(127, 127, 127, 0.9);&#34;&gt;网上搜了一圈没有介绍静态IP安装的.我来记一笔吧.&lt;p&gt;  ![1](./index/attachments/image.png)    ![2](./index/attachments/image-1.png)...]]>
+        </description>
+        <link>https://chaleaoch.com/ubuntu serviver24.04安装小记</link>
+        <guid isPermaLink="false">ubuntu serviver24.04安装小记</guid>
+        <pubDate>2024-09-02T00:00:00.000Z</pubDate>
+      </item>
+    
+      <item>
+        <title>
+          <![CDATA[cors扫盲]]>
+        </title>
+        <description>
+          <![CDATA[&lt;p style=&#34;color: rgba(127, 127, 127, 0.9);&#34;&gt;扫盲,科普,笔记&lt;p&gt;  ## 同源  协议/ip/端口号 满足一个就算跨域  ## 行为  当跨域的时候,浏览器会阻止js获取到数据.  ## 解决方案  ### 简单请求  #### 定义  get/head...]]>
+        </description>
+        <link>https://chaleaoch.com/cors扫盲</link>
+        <guid isPermaLink="false">cors扫盲</guid>
+        <pubDate>2024-08-20T00:00:00.000Z</pubDate>
+      </item>
+    
+      <item>
+        <title>
+          <![CDATA[一个不带插件的flask应用4 -- flask-filter]]>
+        </title>
+        <description>
+          <![CDATA[&lt;p style=&#34;color: rgba(127, 127, 127, 0.9);&#34;&gt;由于接触的第一个web框架是django和django-rest-framework, 体会到了django-filter的妙处, 所以在开发flask项目的时候, 想自己做一个&lt;p&gt;  本filter基于[Pe...]]>
+        </description>
+        <link>https://chaleaoch.com/一个不带插件的flask应用4 -- flask-filter</link>
+        <guid isPermaLink="false">一个不带插件的flask应用4 -- flask-filter</guid>
+        <pubDate>2024-06-04T00:00:00.000Z</pubDate>
+      </item>
+    
+      <item>
+        <title>
+          <![CDATA[future对象]]>
+        </title>
+        <description>
+          <![CDATA[&lt;p style=&#34;color: rgba(127, 127, 127, 0.9);&#34;&gt;Future对象其实在平时的工作中使用的并不是很多, 最近在研究fastapi以及底层的asyncio, 里面遇到了future对象和task对象, 仔细看看.&lt;p&gt;  在python中, future可以指两个...]]>
+        </description>
+        <link>https://chaleaoch.com/future对象</link>
+        <guid isPermaLink="false">future对象</guid>
+        <pubDate>2024-05-13T00:00:00.000Z</pubDate>
+      </item>
+    
+      <item>
+        <title>
+          <![CDATA[apscheduler小剖]]>
+        </title>
+        <description>
+          <![CDATA[&lt;p style=&#34;color: rgba(127, 127, 127, 0.9);&#34;&gt;前段时间同事问我, 如果直接修改apscheduler的数据库信息, 是否可以让job快速运行. 答案当然是否定的, 具体原因需要结合代码解释, 这就是本文的由来.&lt;p&gt;  无论是官网还是源码, 都很清晰的表达a...]]>
+        </description>
+        <link>https://chaleaoch.com/apscheduler源码小剖</link>
+        <guid isPermaLink="false">apscheduler源码小剖</guid>
+        <pubDate>2024-05-04T00:00:00.000Z</pubDate>
+      </item>
+    
+      <item>
+        <title>
+          <![CDATA[wsgi介绍]]>
+        </title>
+        <description>
+          <![CDATA[&lt;p style=&#34;color: rgba(127, 127, 127, 0.9);&#34;&gt;由于最近在组内推广我写的基于flask的框架, 可能会被问到一些基于flask的相对底层的问题. 所以重新学习了一下flask, wsgi和asgi. 趁此机会整理一个小系列出来, 这是第一篇.&lt;p&gt;  wsgi...]]>
+        </description>
+        <link>https://chaleaoch.com/wsgi介绍</link>
+        <guid isPermaLink="false">wsgi介绍</guid>
+        <pubDate>2024-04-29T00:00:00.000Z</pubDate>
+      </item>
+    
+      <item>
+        <title>
+          <![CDATA[一个不带插件的flask应用3 -- app依赖反转]]>
+        </title>
+        <description>
+          <![CDATA[虽然flask的设计初衷是一个项目一个app. 但在实践中, 一个项目可能会有多个app, 且各个app可能是多个团队开发. 这时候, 我们希望各个app和flask app之间的依赖关系反转, 这样各个app更加独立.  基本思路就是加入第三方的Manager, 通过这个Manager来管理fla...]]>
+        </description>
+        <link>https://chaleaoch.com/一个不带插件的flask应用3 -- app依赖反转</link>
+        <guid isPermaLink="false">一个不带插件的flask应用3 -- app依赖反转</guid>
+        <pubDate>2024-04-08T00:00:00.000Z</pubDate>
+      </item>
+    
+      <item>
+        <title>
+          <![CDATA[Go包的可见性]]>
+        </title>
+        <description>
+          <![CDATA[golang 的函数,结构体,方法,变量等大写开头的都是可见的,小写开头的都是不可见的. 具体可以参考任意一本书籍或者官方文档. 这里想说的其实不是这个. 这里想说的是, 这个可见性只在调用的瞬间有意义. 当我传递一个小写开头的对象作为参数, 或者通过`:=`创建私有对象,都是没有任何问题的. 具体...]]>
+        </description>
+        <link>https://chaleaoch.com/go包的可见性</link>
+        <guid isPermaLink="false">go包的可见性</guid>
+        <pubDate>2024-01-29T00:00:00.000Z</pubDate>
+      </item>
+    
+      <item>
+        <title>
+          <![CDATA[Go代码断行规则]]>
+        </title>
+        <description>
+          <![CDATA[go 编译器为下列情形自动添加换行分号  ```txt 在Go代码中，注释除外，如果一个代码行的最后一个语法词段（token）为下列所示之一，则一个分号将自动插入在此字段后（即行尾）： 一个标识符； 一个整数、浮点数、虚部、码点或者字符串字面量； 这几个跳转关键字之一：break、continue、...]]>
+        </description>
+        <link>https://chaleaoch.com/Go代码断行规则</link>
+        <guid isPermaLink="false">Go代码断行规则</guid>
+        <pubDate>2024-01-15T00:00:00.000Z</pubDate>
+      </item>
+    
+      <item>
+        <title>
+          <![CDATA[Go切片注意事项]]>
+        </title>
+        <description>
+          <![CDATA[在 go 语言中,所有类型都是值传递, 这个知识在几乎所有 go 语法书中都有介绍. 但是切片和 map 这俩数据结构在做为函数参数的时候,可以通过形参改变实参. 这和值传递理念是相背离的.  这里做个小笔记增强记忆.  ## slice 是一个结构体, 其中有一个字段是指向底层数组的指针  但是 ...]]>
+        </description>
+        <link>https://chaleaoch.com/go切片注意事项</link>
+        <guid isPermaLink="false">go切片注意事项</guid>
+        <pubDate>2024-01-12T00:00:00.000Z</pubDate>
+      </item>
+    
+      <item>
+        <title>
+          <![CDATA[一个不带插件的flask应用2 -- 自定义migrate]]>
+        </title>
+        <description>
+          <![CDATA[## 起因  [前文](https://chaleaoch.com/%E4%B8%80%E4%B8%AA%E4%B8%8D%E5%B8%A6%E6%8F%92%E4%BB%B6%E7%9A%84flask%E5%BA%94%E7%94%A8&gt;) 介绍了自己写的`flask-redis` 和 `fla...]]>
+        </description>
+        <link>https://chaleaoch.com/一个不带插件的flask应用2 -- 自定义migrate</link>
+        <guid isPermaLink="false">一个不带插件的flask应用2 -- 自定义migrate</guid>
+        <pubDate>2023-08-15T00:00:00.000Z</pubDate>
+      </item>
+    
+      <item>
+        <title>
+          <![CDATA[一个不带插件的flask应用]]>
+        </title>
+        <description>
+          <![CDATA[## 起因  事情的起因是这样的, 曾经维护过一个别人做的flask项目,引用了大量的插件, 在维护过程中需要调查插件的源码来解决问题, 发现有的插件功能很单一,但是却写的很复杂(因为开源插件要考虑各种实际使用场景). 有时间精力还不如自己写一个. 恰好得到一个从零开始的项目. 决定尝试做一个零插件...]]>
+        </description>
+        <link>https://chaleaoch.com/一个不带插件的flask应用</link>
+        <guid isPermaLink="false">一个不带插件的flask应用</guid>
+        <pubDate>2023-08-14T00:00:00.000Z</pubDate>
+      </item>
+    
+      <item>
+        <title>
+          <![CDATA[python对属性的搜索优先级]]>
+        </title>
+        <description>
+          <![CDATA[当获取元素的时候，实际上调用的是`object.__getattribute__(key)` 所谓的搜索优先级实际上是`object.__getattribute__(key)`实现的  Data Descriptor和Non-data Descriptor的不同体现在关于实例字典条目的覆盖和计算顺...]]>
+        </description>
+        <link>https://chaleaoch.com/python对属性的搜索优先级</link>
+        <guid isPermaLink="false">python对属性的搜索优先级</guid>
+        <pubDate>2023-07-28T00:00:00.000Z</pubDate>
+      </item>
+    
+      <item>
+        <title>
+          <![CDATA[archlinux安装xrdp踩坑记]]>
+        </title>
+        <description>
+          <![CDATA[先记录步骤, 最后说明哪里踩坑.  1. 安装  ```txt yay -S xrdp xorgxrdp ```  1. `cat /etc/X11/Xwrapper.config`  ```txt allowed_users=anybody ```  1. 新版0.9.21.1-1 需要 `cat...]]>
+        </description>
+        <link>https://chaleaoch.com/archlinux安装xrdp踩坑记</link>
+        <guid isPermaLink="false">archlinux安装xrdp踩坑记</guid>
+        <pubDate>2023-06-07T00:00:00.000Z</pubDate>
+      </item>
+    
+  </channel>
+</rss>
