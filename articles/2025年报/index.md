@@ -23,7 +23,7 @@ hidden: false
 
 年味越来越淡，心情也有些低落。起来上了个厕所，就再也睡不着了。想到哪写到哪，胡乱记几笔，到此为止吧。
 
-![alt text](index/attachments/image.png)
+![alt text](./index/attachments/image.png)
 
 
 <完>
