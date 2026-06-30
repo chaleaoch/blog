@@ -4,8 +4,6 @@ publish_time: "2026-06-30"
 hidden: false
 ---
 
-# 为什么只有 Java 离不开依赖注入框架
-
 <p style="color: rgba(127, 127, 127, 0.9);">因为昨天晚上看到 gin 关于 DI 的描述 "[随着 Gin 应用的增长，你需要一种简洁的方式在处理函数之间共享数据库连接、配置和服务等依赖。Go 的简洁性鼓励使用直接的模式，而不是重量级的 DI 框架](https://gin-gonic.com/zh-cn/docs/middleware/dependency-injection/)" 勾起了我的写作欲望\.\.\.</p>
 
 首先要说清楚一件事， 所有的语言都需要依赖注入， 无论是 python 还是 go， 只不过这两门语言的依赖注入的形式很多， 完全不需要依赖注入框架。
