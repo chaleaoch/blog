@@ -89,6 +89,7 @@ type PipeWorker struct {
     Fn  func(string) string
 }
 
+
 func (w PipeWorker) **Run**() {
     for v := range w.In {
         w.Out <- w.**Fn**(v)
