@@ -205,7 +205,8 @@ CACHES = {
 }
 ```
 
-```Plain Text
+
+```
 from django.core.cache import cache
 
 cache.set("user:1", "Tom", timeout=60)
