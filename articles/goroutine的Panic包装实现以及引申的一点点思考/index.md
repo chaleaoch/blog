@@ -4,32 +4,32 @@ publish_time: "2026-07-01"
 hidden: false
 ---
 
-<p style="color: rgba(127, 127, 127, 0.9);">最近在清理之前收藏的文章, 其中有一段话是, "刚使用 Golang 的人很容易踩到的一个 goroutine 坑点是，一个 goroutine 如果 panic 了，在它的父 goroutine 是无法 recover 的——严格来讲，并没有父子 goroutine 的概念，一旦启动，就是一个独立的 goroutine 了"</p>
+<p style="color: rgba(127, 127, 127, 0.9); ">最近在清理之前收藏的文章, 其中有一段话是, "刚使用 Golang 的人很容易踩到的一个 goroutine 坑点是，一个 goroutine 如果 panic 了，在它的父 goroutine 是无法 recover 的——严格来讲，并没有父子 goroutine 的概念，一旦启动，就是一个独立的 goroutine 了"</p>
 
 这就很有意思了, 虽然现在有很多的开源实现, 但是我想自己写一个, 因为很明显的, 这里需要用到泛型\. 而我之前没有实践过\. 还是从最简单的部分开始\.
 
 ```Go
-func **Go**(fn func()) {
+func Go(fn func()) {
     go func() {
         defer func() {
-            if v := **recover**(); v != nil {
-                log.**Printf**("goroutine panic: %v\n", v)
+            if v := recover(); v != nil {
+                log.Printf("goroutine panic: %v\n", v)
             }
         }()
-        **fn**()
+        fn()
     }()
 }
 
-func **main**() {
-    **Go**(func() {
-        **panic**("something went wrong")
+func main() {
+    Go(func() {
+        panic("something went wrong")
     })
 
-    **Go**(func() {
-        fmt.**Println**("hello from goroutine")
+    Go(func() {
+        fmt.Println("hello from goroutine")
     })
 
-    time.**Sleep**(time.Second)
+    time.Sleep(time.Second)
 }
 ```
 
@@ -44,40 +44,40 @@ import (
     "time"
 )
 
-func **Go**(fn func()) {
+func Go(fn func()) {
     go func() {
         defer func() {
-            if v := **recover**(); v != nil {
-                log.**Printf**("goroutine panic: %v\n", v)
+            if v := recover(); v != nil {
+                log.Printf("goroutine panic: %v\n", v)
             }
         }()
-        **fn**()
+        fn()
     }()
 }
 
 // --- 方法 1：工厂函数，先绑 in/out，再返回 func() ---
 
-func **pipeWorker**(in <-chan int, out chan<- int) func() {
+func pipeWorker(in <-chan int, out chan<- int) func() {
     return func() {
         for v := range in {
             out <- v * 2
         }
-        **close**(out)
+        close(out)
     }
 }
 
-func **example1**() {
-    in := **make**(chan int, 3)
-    out := **make**(chan int, 3)
+func example1() {
+    in := make(chan int, 3)
+    out := make(chan int, 3)
     in <- 1
     in <- 2
     in <- 3
-    **close**(in)
+    close(in)
 
-    **Go**(**pipeWorker**(in, out))
+    Go(pipeWorker(in, out))
 
     for v := range out {
-        fmt.**Println**("method 1:", v)
+        fmt.Println("method 1:", v)
     }
 }
 
@@ -89,21 +89,20 @@ type PipeWorker struct {
     Fn  func(string) string
 }
 
-
-func (w PipeWorker) **Run**() {
+func (w PipeWorker) Run() {
     for v := range w.In {
-        w.Out <- w.**Fn**(v)
+        w.Out <- w.Fn(v)
     }
-    **close**(w.Out)
+    close(w.Out)
 }
 
-func **example2**() {
-    in := **make**(chan string, 3)
-    out := **make**(chan string, 3)
+func example2() {
+    in := make(chan string, 3)
+    out := make(chan string, 3)
     in <- "go"
     in <- "rust"
     in <- "zig"
-    **close**(in)
+    close(in)
 
     w := PipeWorker{
         In:  in,
@@ -112,41 +111,41 @@ func **example2**() {
             return "[" + s + "]"
         },
     }
-    **Go**(w.**Run**)
+    Go(w.Run)
 
     for v := range out {
-        fmt.**Println**("method 2:", v)
+        fmt.Println("method 2:", v)
     }
 }
 
 // --- 方法 3：直接闭包，捕获外层的 in/out ---
 
-func **example3**() {
-    in := **make**(chan int, 3)
-    out := **make**(chan int, 3)
+func example3() {
+    in := make(chan int, 3)
+    out := make(chan int, 3)
     in <- 7
     in <- 8
     in <- 9
-    **close**(in)
+    close(in)
 
-    **Go**(func() {
+    Go(func() {
         for v := range in {
             out <- v + 1
         }
-        **close**(out)
+        close(out)
     })
 
     for v := range out {
-        fmt.**Println**("method 3:", v)
+        fmt.Println("method 3:", v)
     }
 }
 
-func **main**() {
-    **example1**()
-    **example2**()
-    **example3**()
+func main() {
+    example1()
+    example2()
+    example3()
 
-    time.**Sleep**(100 * time.Millisecond)
+    time.Sleep(100 * time.Millisecond)
 }
 
 ```
