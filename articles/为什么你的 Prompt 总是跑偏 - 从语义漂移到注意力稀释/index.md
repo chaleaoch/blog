@@ -12,23 +12,23 @@ hidden: false
 
 **语义漂移** —— 拐弯了。模型顺着中间产物一路跑，子问题变成主线，最初要干啥忘干净了。让它清磁盘，它从查日志追到 SSL，再追到 DNS……一步比一步合理，离目标越来越远。不及时纠偏，后面整段白聊。
 
-![image.png](./index/attachments/image9.png)
+![](./index/attachments/image9.png)
 
 **注意力稀释** —— 一开始的要求忘了。上下文一长，早期约束就被冲淡。说好用中文，聊着聊着开始写英文，得再吼一句「说中文！」才拉回来。
 
-![image.png](./index/attachments/image3.png)
+![](./index/attachments/image3.png)
 
 **语义惯性** —— 上文决定下文。前面几轮全是 `rm -rf`、`prune -f`，`-f` 的权重已经拉很高了；你再让它「归档重要配置，别丢」，它还是可能下意识接上激进清理。很多误删盘，就是这么来的。
 
-![image.png](./index/attachments/image8.png)
+![](./index/attachments/image8.png)
 
 **语义壁垒** —— 难题直接逼答案，模型一着急就胡说。让它先想再答，往往就过了。也就是 CoT（Chain of Thought，思维链）。
 
-![image.png](./index/attachments/image.png)
+![](./index/attachments/image.png)
 
 **相变** —— 哪怕胡言乱语，也可能把采样扳回路上。「多说点废话，慢慢想」，答案反而对了。但乱说也会带回漂移和稀释，双刃剑。
 
-![image.png](./index/attachments/image6.png)
+![](./index/attachments/image6.png)
 
 **特征纠缠** —— 想加一个特点，顺带带出一堆相关的。你说「回答要严谨」，想要的是逻辑准，模型却一起变成学术腔、术语一大堆。所以得写成：「逻辑要严谨，但表达简短、口语化，不展开背景。」想加什么，就把不想要的副作用也钉死。
 
@@ -36,15 +36,15 @@ hidden: false
 
 复杂问题约束太多，反而把 AI 压死。**先发散后收敛**：多要几种方案，再按自己的约束挑一个落地。
 
-![image.png](./index/attachments/image11.png)
+![](./index/attachments/image11.png)
 
 **先推理后结论**。很多人（包括我）喜欢第一句就给结论，后面再展开。问题是结论一旦先出来，后面的「推理」就只能围着它圆谎。结论错了，整段废。
 
-![image.png](./index/attachments/image5.png)
+![](./index/attachments/image5.png)
 
 **入戏与共振采样**。连续砸同类关键词，把 AI 锁进人设，别让它滑回默认的热情助手。破碎、灰烬、干笑这类词砸够了，氛围才站得住。
 
-![image.png](./index/attachments/image10.png)
+![](./index/attachments/image10.png)
 
 **隐式语义优于显式语义**（当然，显式/隐式是相对的，否则啥指令都能算显式）。
 
@@ -55,25 +55,25 @@ hidden: false
 
 隐式能一次打包一整套品味，但会特征纠缠，得靠**显式配平**收敛：想要的往上拉，不想要的往下压。
 
-![image.png](./index/attachments/image1.png)
+![](./index/attachments/image1.png)
 
 配平又带来新麻烦。
 
 模型本来就会 md，你还把 `#`、`**`、`*` 一条条列出来，等于在强调「这些词很重要」——**知识冗余**。
 
-![image.png](./index/attachments/image2.png)
+![](./index/attachments/image2.png)
 
 然后就是**注意力劫持**：显式举例有引力，生成内容会被这些词拽偏，文章为了展示语法而生硬堆砌。
 
-![image.png](./index/attachments/image13.png)
+![](./index/attachments/image13.png)
 
 还有**认知降维**：步骤写太细，模型就被钉死在你那几条命令上，全局更优解想都不敢想。你的约束，有时候比模型上限更窄。
 
-![image.png](./index/attachments/image15.png)
+![](./index/attachments/image15.png)
 
 所以最后往往又回到**隐式提纯**：别列属性了，丢个高纯度压缩包。直接说「你是 JARVIS」，比逐条描述英式幽默、略傲慢、叫我 Sir 更有灵魂。这词里当然有漫威杂质，但特定场景下，它就是高纯度语义。
 
-![image.png](./index/attachments/image14.png)
+![](./index/attachments/image14.png)
 
 说来说去，很容易变成 `咸了 → 加水 → 淡了 → 加盐` 的死循环。
 
@@ -81,17 +81,17 @@ hidden: false
 
 **引导采样与回滚**：先用一堆话帮模型想清楚，拿到准关键词；再开新对话，只用这些词重问。回滚是为了甩掉引导过程里积下的注意力污染。
 
-![image.png](./index/attachments/image12.png)
+![](./index/attachments/image12.png)
 
 **案例好于说明**。`ls -al | grep` 这一行，就已经告诉模型这是 Linux 生态，不必再废话解释环境。
 
 **引入数学符号和数学语义**。自然语言熵高，容易变成公关腔、和稀泥。换成因果式、代入式的符号，模型更容易给可判定的结论，而不是一段正确的废话。
 
-![image.png](./index/attachments/image7.png)
+![](./index/attachments/image7.png)
 
 抽象概念也可以丢「第一性原理」「奥卡姆剃刀」这类催化剂 token，把表达压短、压干净。
 
-![image.png](./index/attachments/image4.png)
+![](./index/attachments/image4.png)
 
 ---
 
